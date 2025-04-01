@@ -23,6 +23,7 @@
     "framer-motion": "^11.11.17",
     "fs": "^0.0.1-security",
     "lz-string": "^1.5.0",
+    "near-protocol-rewards": "^1.0.0",
     "next": "15.0.3",
     "openai": "^4.72.0",
     "pako": "^2.1.0",
