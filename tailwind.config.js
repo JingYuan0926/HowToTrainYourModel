@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+/** @type {import('@tailwindcss/postcss').Config} */
 const {heroui} = require("@heroui/react");
 
 module.exports = {
