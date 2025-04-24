@@ -2,20 +2,50 @@ import { useEffect, useState } from "react";
 import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
+import { providers } from "near-api-js";
 
 // Define contract ID - you can replace this with your actual contract ID
 const CONTRACT_ID = "test.testnet";
+const NETWORK_ID = "testnet";
+const PROVIDER_URL = `https://rpc.${NETWORK_ID}.near.org`;
 
 export function useWallet() {
   const [selector, setSelector] = useState(null);
   const [modal, setModal] = useState(null);
   const [accountId, setAccountId] = useState(null);
+  const [balance, setBalance] = useState(null);
+
+  // Simplified function to fetch account balance
+  const fetchBalance = async (id) => {
+    if (!id) return;
+    
+    try {
+      // Create a direct connection to the NEAR RPC
+      const provider = new providers.JsonRpcProvider({ url: PROVIDER_URL });
+      
+      // Make a simple RPC call to get account details
+      const account = await provider.query({
+        request_type: "view_account",
+        account_id: id,
+        finality: "final"
+      });
+      
+      // Convert yoctoNEAR to NEAR (1 NEAR = 10^24 yoctoNEAR)
+      if (account && account.amount) {
+        const nearBalance = parseFloat(account.amount) / 1e24;
+        setBalance(nearBalance.toFixed(2));
+      }
+    } catch (error) {
+      console.error("Failed to fetch balance:", error);
+      setBalance("0.00");
+    }
+  };
 
   useEffect(() => {
     // Initialize the wallet selector
     const init = async () => {
       const walletSelector = await setupWalletSelector({
-        network: "testnet",
+        network: NETWORK_ID,
         modules: [setupMyNearWallet()],
       });
 
@@ -26,15 +56,20 @@ export function useWallet() {
       // Get the account if already signed in
       const accounts = await walletSelector.store.getState().accounts;
       if (accounts.length > 0) {
-        setAccountId(accounts[0].accountId);
+        const id = accounts[0].accountId;
+        setAccountId(id);
+        fetchBalance(id);
       }
 
       // Subscribe to changes
       const subscription = walletSelector.store.observable.subscribe((state) => {
         if (state.accounts.length > 0) {
-          setAccountId(state.accounts[0].accountId);
+          const id = state.accounts[0].accountId;
+          setAccountId(id);
+          fetchBalance(id);
         } else {
           setAccountId(null);
+          setBalance(null);
         }
       });
 
@@ -58,6 +93,7 @@ export function useWallet() {
       try {
         const wallet = await selector.wallet();
         await wallet.signOut();
+        setBalance(null);
       } catch (err) {
         console.error("Failed to sign out:", err);
       }
@@ -88,6 +124,8 @@ export function useWallet() {
       });
       
       console.log("Transaction sent successfully");
+      // Refresh balance after transaction
+      fetchBalance(accountId);
       return true;
     } catch (err) {
       console.error("Failed to call contract:", err);
@@ -113,12 +151,21 @@ export function useWallet() {
     }
   };
 
+  // Manually refresh balance
+  const refreshBalance = () => {
+    if (accountId) {
+      fetchBalance(accountId);
+    }
+  };
+
   return {
     accountId,
+    balance,
     selector,
     connectWallet,
     disconnectWallet,
     callContractMethod,
     viewMethod,
+    refreshBalance,
   };
 } 
