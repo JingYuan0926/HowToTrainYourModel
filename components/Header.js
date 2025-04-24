@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
 
 export default function Header() {
-  const { accountId, connectWallet, disconnectWallet, callContractMethod } = useWallet();
+  const { accountId, balance, connectWallet, disconnectWallet, callContractMethod } = useWallet();
 
   const handleConnectWallet = () => {
     if (accountId) {
@@ -38,7 +38,10 @@ export default function Header() {
       <div className="flex items-center">
         {accountId && (
           <div className="mr-4 text-sm">
-            <span className="font-medium">{accountId}</span>
+            <div className="font-medium">{accountId}</div>
+            <div className="text-sm text-gray-600">
+              {balance !== null ? `${balance} NEAR` : 'Loading balance...'}
+            </div>
           </div>
         )}
         <Button color="primary" onClick={handleConnectWallet} className="mr-2">
