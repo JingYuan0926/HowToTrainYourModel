@@ -1,10 +1,11 @@
 import "@/styles/globals.css";
-import { HeroUIProvider } from "@heroui/react";
+import {HeroUIProvider} from "@heroui/react";
+
 
 export default function App({ Component, pageProps }) {
   return (
     <HeroUIProvider>
-      <Component {...pageProps} />
+      < Component {...pageProps} />
     </HeroUIProvider>
-  );
+  )
 }
