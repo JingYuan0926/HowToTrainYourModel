@@ -4,7 +4,7 @@ import { setupModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 
 // Define contract ID - you can replace this with your actual contract ID
-const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "test.testnet";
+const CONTRACT_ID = "test.testnet";
 
 export function useWallet() {
   const [selector, setSelector] = useState(null);
