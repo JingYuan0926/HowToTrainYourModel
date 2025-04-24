@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import "@near-wallet-selector/modal-ui/styles.css";
 import {HeroUIProvider} from "@heroui/react";
 import Header from "@/components/Header";
 
