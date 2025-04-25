@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
-
+import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 
 import { providers } from "near-api-js";
@@ -52,6 +52,7 @@ export function useWallet() {
         modules: [
           setupMyNearWallet(),     // My NEAR Wallet (web wallet)
           setupMeteorWallet(),     // Meteor Wallet
+          setupHereWallet(),       // HERE Wallet (mobile wallet)
         ],
       });
 
