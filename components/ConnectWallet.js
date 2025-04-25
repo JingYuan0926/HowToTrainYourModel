@@ -4,7 +4,7 @@ import { setupModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
-
+import { setupSender } from "@near-wallet-selector/sender";
 import { providers } from "near-api-js";
 
 // Define contract ID - you can replace this with your actual contract ID
@@ -53,6 +53,7 @@ export function useWallet() {
           setupMyNearWallet(),     // My NEAR Wallet (web wallet)
           setupMeteorWallet(),     // Meteor Wallet
           setupHereWallet(),       // HERE Wallet (mobile wallet)
+          setupSender(),           // Sender Wallet
         ],
       });
 
