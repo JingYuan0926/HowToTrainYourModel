@@ -6,6 +6,7 @@ import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupSender } from "@near-wallet-selector/sender";
 import { setupNightly } from "@near-wallet-selector/nightly";
+import { setupLedger } from "@near-wallet-selector/ledger";
 import { providers } from "near-api-js";
 
 // Define contract ID - you can replace this with your actual contract ID
@@ -56,6 +57,7 @@ export function useWallet() {
           setupHereWallet(),       // HERE Wallet (mobile wallet)
           setupSender(),           // Sender Wallet
           setupNightly(),          // Nightly Wallet
+          setupLedger(),           // Ledger Wallet
         ],
       });
 
