@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
+
+import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
+
 import { providers } from "near-api-js";
 
 // Define contract ID - you can replace this with your actual contract ID
@@ -46,11 +49,15 @@ export function useWallet() {
     const init = async () => {
       const walletSelector = await setupWalletSelector({
         network: NETWORK_ID,
-        modules: [setupMyNearWallet()],
+        modules: [
+          setupMyNearWallet(),     // My NEAR Wallet (web wallet)
+          setupMeteorWallet(),     // Meteor Wallet
+        ],
       });
 
       const walletModal = setupModal(walletSelector, {
         contractId: CONTRACT_ID,
+        description: "Connect to use this dApp with your NEAR wallet",
       });
 
       // Get the account if already signed in
