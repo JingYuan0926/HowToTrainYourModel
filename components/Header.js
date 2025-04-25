@@ -44,11 +44,11 @@ export default function Header() {
             </div>
           </div>
         )}
-        <Button color="primary" onClick={handleConnectWallet} className="mr-2">
+        <Button color="primary" onPress={handleConnectWallet} className="mr-2">
           {accountId ? "Disconnect" : "Connect Wallet"}
         </Button>
         {accountId && (
-          <Button color="secondary" onClick={handleCallContract}>
+          <Button color="secondary" onPress={handleCallContract}>
             Call Contract
           </Button>
         )}
