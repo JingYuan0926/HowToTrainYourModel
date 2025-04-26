@@ -63,7 +63,11 @@ export function useWallet() {
           setupEthereumWallets({   // Ethereum Wallets (MetaMask, etc.)
             wagmiConfig,
             modalOptions: {
-              web3Modal
+              web3Modal,
+              // Prevent automatic network checking on page load
+              checkNetworkOnInit: false,
+              // Only load Web3Modal when Ethereum wallet is selected
+              loadOnlyOnSelection: true
             }
           }),
         ],
