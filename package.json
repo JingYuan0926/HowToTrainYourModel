@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroui/react": "^2.7.6",
+    "@near-wallet-selector/ethereum-wallets": "^8.10.2",
     "@near-wallet-selector/here-wallet": "^8.10.2",
     "@near-wallet-selector/meteor-wallet": "^8.10.2",
     "@near-wallet-selector/modal-ui": "^8.10.2",
