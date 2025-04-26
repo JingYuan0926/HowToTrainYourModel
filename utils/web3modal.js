@@ -66,4 +66,16 @@ export const wagmiConfig = createConfig({
 reconnect(wagmiConfig);
 
 // Modal for login
-export const web3Modal = createWeb3Modal({ wagmiConfig, projectId }); 
+export const web3Modal = createWeb3Modal({ 
+  wagmiConfig, 
+  projectId,
+  // Disable auto-connect which can trigger network switching
+  autoConnect: false,
+  // Don't check network initially
+  enableNetworkView: false,
+  // Don't auto-open the network switch modal
+  enableNetworkSwitching: false,
+  // Only enable when explicitly interacted with
+  includeWalletIds: [],
+  featuredWalletIds: []
+}); 
