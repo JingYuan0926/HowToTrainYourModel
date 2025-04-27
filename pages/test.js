@@ -1,29 +1,28 @@
 import React, { useState } from 'react';
 
-const paramRanges = { pH: { min: 0, max: 14, step: 0.1 }, /* other params... */ };
+// imports and helpers same as v4
 
 export default function Home() {
-  const initial = Object.keys(paramRanges).reduce((acc, key) => ({
-    ...acc,
-    [key]: (paramRanges[key].min + paramRanges[key].max) / 2,
-  }), {});
   const [formData, setFormData] = useState(initial);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-  
-  const standardizeInput = (data) => {
-    const out = {};
-    for (let key in data) {
-      out[key] = standardizeValue(parseFloat(data[key]), paramRanges[key].min, paramRanges[key].max);
-    }
-    return out;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    setError(null);
+    setIsLoading(true);
+    try {
+      const standardized = standardizeInput(formData);
+      const res = await fetch('/api/predict', { method: 'POST', body: JSON.stringify(standardized) });
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
