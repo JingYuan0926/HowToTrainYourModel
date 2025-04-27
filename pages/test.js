@@ -12,6 +12,14 @@ export default function Home() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  
+  const standardizeInput = (data) => {
+    const out = {};
+    for (let key in data) {
+      out[key] = standardizeValue(parseFloat(data[key]), paramRanges[key].min, paramRanges[key].max);
+    }
+    return out;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
