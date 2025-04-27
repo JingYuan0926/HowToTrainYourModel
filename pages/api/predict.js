@@ -1,4 +1,6 @@
 export default async function handler(req, res) {
-    // TODO: Implement prediction proxy
-    res.status(200).json({ message: 'Not implemented' });
+    if (req.method !== 'POST') {
+      return res.status(405).json({ message: 'Method not allowed' });
+    }
+    res.status(200).json({ message: 'POST received' });
   }
