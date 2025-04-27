@@ -13,32 +13,56 @@ const paramRanges = {
   Turbidity: { min: 0, max: 10, step: 0.1 }
 };
 
-export default function TestPage() {
-  // For now, let's just manage the state for pH
-  const [phValue, setPhValue] = useState(7.0); // Start pH at a neutral value
+// Function to get initial default values (e.g., midpoint)
+const getInitialFormData = () => {
+  const initialData = {};
+  for (const param in paramRanges) {
+    const range = paramRanges[param];
+    // Calculate midpoint and format according to step
+    initialData[param] = ((range.max + range.min) / 2).toFixed(range.step < 1 ? 1 : 0);
+  }
+  return initialData;
+};
 
-  const handlePhChange = (e) => {
-    setPhValue(parseFloat(e.target.value).toFixed(1));
+export default function TestPage() {
+  // Use a single state object for all form data
+  const [formData, setFormData] = useState(getInitialFormData());
+
+  // Generic change handler for all inputs
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const range = paramRanges[name];
+    setFormData(prev => ({
+      ...prev,
+      // Ensure value is stored correctly formatted based on step
+      [name]: parseFloat(value).toFixed(range.step < 1 ? 1 : 0)
+    }));
   };
 
   return (
     <div>
       <h1>Water Quality Parameters</h1>
       <form>
-        <div>
-          <label htmlFor="pH">pH: {phValue}</label>
-          <input
-            type="range"
-            id="pH"
-            name="pH"
-            min={paramRanges.pH.min}
-            max={paramRanges.pH.max}
-            step={paramRanges.pH.step}
-            value={phValue}
-            onChange={handlePhChange}
-          />
-        </div>
-        {/* More sliders will go here */}
+        {/* Dynamically create sliders for each parameter */}
+        {Object.entries(formData).map(([param, value]) => {
+          const range = paramRanges[param];
+          return (
+            <div key={param}>
+              <label htmlFor={param}>{param}: {value}</label>
+              <input
+                type="range"
+                id={param}
+                name={param}
+                min={range.min}
+                max={range.max}
+                step={range.step}
+                value={value}
+                onChange={handleChange} // Use the generic handler
+              />
+            </div>
+          );
+        })}
+        {/* Submit button can be added later */}
       </form>
     </div>
   );
