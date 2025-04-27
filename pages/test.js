@@ -54,7 +54,6 @@ export default function Home() {
     setError(null);
     setResult(null);
     setLoading(true);
-
     try {
       const standardized = standardizeInput(formData);
       const res = await fetch('/api/predict', {
@@ -62,10 +61,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(standardized),
       });
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || 'API request failed');
-      }
+      if (!res.ok) throw new Error('API error');
       const data = await res.json();
       setResult(data);
     } catch (err) {
@@ -73,6 +69,11 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getWaterColor = () => {
+    if (!result) return 'lightblue';
+    return result.cluster === 0 ? 'salmon' : 'lightgreen';
   };
 
   return (
@@ -110,6 +111,32 @@ export default function Home() {
           <p>Cluster: {result.cluster}</p>
         </div>
       )}
+
+      {/* Simple CSS flask */}
+      <div style={{ position: 'relative', width: 200, height: 200, marginTop: 20 }}>
+        <div
+          style={{
+            position: 'absolute',
+            bottom:   0,
+            width:    '100%',
+            height:   '50%',
+            backgroundColor: getWaterColor(),
+            borderRadius:    '0 0 100px 100px'
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top:      0,
+            left:     '50%',
+            transform: 'translateX(-50%)',
+            width:    100,
+            height:   20,
+            backgroundColor: '#ddd',
+            borderRadius:    '100px 100px 0 0'
+          }}
+        />
+      </div>
     </div>
   );
 }
