@@ -1,12 +1,14 @@
-// Version 2: API route with some fixes
+// Next.js API route handler for water quality prediction
+// This proxies requests to the external prediction server
 
 export default async function handler(req, res) {
-  // Added: Check if req.method is POST
+  // Only accept POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
+    // Forward the request to the external server
     const response = await fetch(
       'https://e3c329acf714051138becd9199470e6d1ae0cabd-5050.dstack-prod5.phala.network/predict',
       {
@@ -15,24 +17,25 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        // Fixed: Body is now stringified
         body: JSON.stringify(req.body),
       }
     );
 
-    // Improved error handling: Check response.ok
+    // Handle non-successful responses
     if (!response.ok) {
-      // Still basic: Doesn't parse error details from response body
-      console.error('External API Error Status:', response.status);
-      return res.status(response.status || 500).json({ message: 'External API request failed' });
+      const errorData = await response.json().catch(() => ({})); // Try to parse JSON error body
+      return res.status(response.status).json(
+        // Use parsed message if available, otherwise provide a fallback
+        errorData.message ? { message: errorData.message } : { message: 'API request failed' }
+      );
     }
 
+    // Return the successful response data
     const data = await response.json();
     return res.status(200).json(data);
-
   } catch (error) {
-    console.error('API Error:', error);
-    // Generic error response for network or other issues
-    return res.status(500).json({ message: 'Failed to process request' });
+    console.error('Error proxying request to prediction server:', error);
+    // More specific error for network/proxy issues
+    return res.status(500).json({ message: 'Failed to connect to prediction server' });
   }
 } 
