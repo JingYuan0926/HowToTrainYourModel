@@ -1,7 +1,10 @@
-// Version 1: API route with errors
+// Version 2: API route with some fixes
 
 export default async function handler(req, res) {
-  // Missing: Check if req.method is POST
+  // Added: Check if req.method is POST
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
   try {
     const response = await fetch(
@@ -12,14 +15,16 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        // Error: Body should be stringified
-        body: req.body,
+        // Fixed: Body is now stringified
+        body: JSON.stringify(req.body),
       }
     );
 
-    // Basic error handling, doesn't check response.ok properly
-    if (!response) {
-      throw new Error('Fetch failed');
+    // Improved error handling: Check response.ok
+    if (!response.ok) {
+      // Still basic: Doesn't parse error details from response body
+      console.error('External API Error Status:', response.status);
+      return res.status(response.status || 500).json({ message: 'External API request failed' });
     }
 
     const data = await response.json();
@@ -27,7 +32,7 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('API Error:', error);
-    // Generic error response
-    return res.status(500).json({ message: 'An error occurred' });
+    // Generic error response for network or other issues
+    return res.status(500).json({ message: 'Failed to process request' });
   }
 } 
