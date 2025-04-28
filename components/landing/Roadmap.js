@@ -54,11 +54,11 @@ export default function Roadmap() {
   ];
 
   return (
-    <section className="w-full py-20 bg-white">
-      <div className="container mx-auto px-6">
+    <section className="w-full h-[100vh] flex flex-col justify-center items-center bg-white border-b border-gray-200 snap-start">
+      <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full">
         <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center">Roadmap</h2>
         
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto w-full">
           <BentoGrid className="lg:grid-rows-4">
             {roadmapItems.map((item, idx) => (
               <BentoCard 
