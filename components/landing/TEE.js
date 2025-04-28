@@ -33,9 +33,9 @@ export default function TEE() {
   ];
 
   return (
-    <section className="w-full py-20 bg-gradient-to-r from-gray-900 to-indigo-900 text-white">
-      <div className="container mx-auto px-6">
-        <div className="max-w-5xl mx-auto">
+    <section className="w-full h-[100vh] flex flex-col justify-center items-center bg-gradient-to-r from-gray-900 to-indigo-900 text-white border-b border-indigo-800 snap-start">
+      <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full">
+        <div className="max-w-5xl mx-auto w-full">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Trusted Execution Environment (TEE)</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
