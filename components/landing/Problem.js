@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function Problem() {
   return (
-    <section className="w-full py-20 bg-gray-50">
-      <div className="container mx-auto px-6">
-        <div className="max-w-3xl mx-auto">
+    <section className="w-full h-[100vh] flex flex-col justify-center items-center bg-gray-50 border-b border-gray-200 snap-start">
+      <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full">
+        <div className="max-w-3xl mx-auto w-full">
           <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">The Problem</h2>
           
           <div className="bg-white rounded-xl shadow-lg p-8">
