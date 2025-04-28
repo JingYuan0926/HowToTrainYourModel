@@ -2,11 +2,11 @@ import React from 'react';
 
 export default function Solution() {
   return (
-    <section className="w-full py-20 bg-white">
-      <div className="container mx-auto px-6">
+    <section className="w-full h-[100vh] flex flex-col justify-center items-center bg-white border-b border-gray-300 snap-start">
+      <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full">
         <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Our Solution</h2>
         
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto w-full">
           <div className="mb-12 text-center">
             <p className="text-xl md:text-2xl mb-8 text-gray-700">
               Imagine a world where individuals, organizations, and companies pool their compute and expertise to train a single, shared AI model.
