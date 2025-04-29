@@ -10,6 +10,7 @@
 !.yarn/releases
 !.yarn/versions
 /smartcontracts/node_modules
+/smartcontracts/package-lock.json
 
 # testing
 /coverage
