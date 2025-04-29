@@ -137,4 +137,21 @@ class SubscriptionContract {
     this.subscribers = new LookupMap('subscribers_storage_v1');
     near.log('Contract repaired successfully');
   }
+
+  @call({})
+  useModel(): boolean {
+    const accountId = near.predecessorAccountId();
+    if (!this.subscribers) {
+      this.subscribers = new LookupMap('subscribers_storage_v1');
+      return false;
+    }
+
+    const expiry = this.subscribers.get(accountId);
+    if (expiry === null) {
+      return false;
+    }
+    
+    const now = near.blockTimestamp();
+    return expiry > now;
+  }
 }
