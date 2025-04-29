@@ -1,0 +1,7 @@
+DEFINE_NEAR_METHOD(deposit)
+DEFINE_NEAR_METHOD(get_credit_rate)
+DEFINE_NEAR_METHOD(get_credits)
+DEFINE_NEAR_METHOD(get_pool_balance)
+DEFINE_NEAR_METHOD(init)
+DEFINE_NEAR_METHOD(use_credit)
+DEFINE_NEAR_METHOD(withdraw)
