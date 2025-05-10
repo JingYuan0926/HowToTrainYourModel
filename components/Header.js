@@ -26,7 +26,7 @@ export default function Header() {
     <header className="w-full py-4 px-6 flex justify-between items-center border-b border-gray-200">
       <div className="flex items-center">
         <Link href="/" className="text-xl font-bold">
-          Your App Name
+          HowToTrainYourModel
         </Link>
         <nav className="ml-8">
           <ul className="flex gap-6">
