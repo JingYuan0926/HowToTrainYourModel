@@ -12,8 +12,8 @@ import { providers } from "near-api-js";
 import { wagmiConfig, web3Modal } from "../utils/web3modal";
 
 // Define contract ID - you can replace this with your actual contract ID
-const CONTRACT_ID = "test.testnet";
-const NETWORK_ID = "testnet";
+const CONTRACT_ID = "ilovetofu.near";
+const NETWORK_ID = "mainnet";
 const PROVIDER_URL = `https://rpc.${NETWORK_ID}.near.org`;
 
 export function useWallet() {
@@ -192,5 +192,6 @@ export function useWallet() {
     callContractMethod,
     viewMethod,
     refreshBalance,
+    networkId: NETWORK_ID, // Always return mainnet as the network
   };
 } 

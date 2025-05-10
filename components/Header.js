@@ -5,15 +5,13 @@ import { useState } from "react";
 
 export default function Header() {
   const { accountId, balance, connectWallet, disconnectWallet, callContractMethod, networkId } = useWallet();
-  const [showNetworkOptions, setShowNetworkOptions] = useState(false);
-
-  const handleConnectWallet = (network) => {
+  
+  const handleConnectWallet = () => {
     if (accountId) {
       disconnectWallet();
     } else {
-      connectWallet(network);
+      connectWallet();
     }
-    setShowNetworkOptions(false);
   };
 
   // Example of calling a contract method
@@ -48,9 +46,7 @@ export default function Header() {
             </div>
             {networkId && (
               <div className="text-xs text-gray-500">
-                Network: <span className={networkId === 'mainnet' ? 'text-green-500' : 'text-blue-500'}>
-                  {networkId === 'mainnet' ? 'Mainnet' : 'Testnet'}
-                </span>
+                Network: <span className="text-green-500">Mainnet</span>
               </div>
             )}
           </div>
@@ -61,32 +57,13 @@ export default function Header() {
             Disconnect
           </Button>
         ) : (
-          <div className="relative">
-            <Button 
-              color="primary" 
-              onPress={() => setShowNetworkOptions(!showNetworkOptions)} 
-              className="mr-2"
-            >
-              Connect Wallet
-            </Button>
-            
-            {showNetworkOptions && (
-              <div className="absolute right-0 mt-2 z-10 bg-white shadow-lg rounded-md overflow-hidden w-40 border border-gray-200">
-                <button 
-                  onClick={() => handleConnectWallet('mainnet')}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm font-medium text-green-600 border-b border-gray-100"
-                >
-                  Connect to Mainnet
-                </button>
-                <button 
-                  onClick={() => handleConnectWallet('testnet')}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm font-medium text-blue-600"
-                >
-                  Connect to Testnet
-                </button>
-              </div>
-            )}
-          </div>
+          <Button 
+            color="primary" 
+            onPress={handleConnectWallet} 
+            className="mr-2"
+          >
+            Connect Wallet
+          </Button>
         )}
         
         {accountId && (
