@@ -7,9 +7,7 @@ import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupSender } from "@near-wallet-selector/sender";
 import { setupNightly } from "@near-wallet-selector/nightly";
 import { setupLedger } from "@near-wallet-selector/ledger";
-import { setupEthereumWallets } from "@near-wallet-selector/ethereum-wallets";
 import { providers } from "near-api-js";
-import { wagmiConfig, web3Modal } from "../utils/web3modal";
 
 // Define contract ID - you can replace this with your actual contract ID
 const CONTRACT_ID = "ilovetofu.near";
@@ -60,16 +58,6 @@ export function useWallet() {
           setupSender(),           // Sender Wallet
           setupNightly(),          // Nightly Wallet
           setupLedger(),           // Ledger Wallet
-          setupEthereumWallets({   // Ethereum Wallets (MetaMask, etc.)
-            wagmiConfig,
-            modalOptions: {
-              web3Modal,
-              // Prevent automatic network checking on page load
-              checkNetworkOnInit: false,
-              // Only load Web3Modal when Ethereum wallet is selected
-              loadOnlyOnSelection: true
-            }
-          }),
         ],
       });
 
