@@ -29,8 +29,12 @@ export default function Header() {
 
       {/* Middle - Navigation */}
       <nav className="flex-grow flex justify-center">
-        <ul className="flex gap-6">
-          <li><Link href="/" className="hover:text-black font-medium">Home</Link></li>
+        <ul className="flex gap-6 items-center">
+          <li>
+            <Link href="/" className="bg-white border border-gray-200 rounded-full px-5 py-2 inline-block font-medium shadow-sm">
+              Home
+            </Link>
+          </li>
           <li><Link href="/how-it-works" className="hover:text-black text-gray-600">How it Works</Link></li>
           <li><Link href="/features" className="hover:text-black text-gray-600">Features</Link></li>
           <li><Link href="/pricing" className="hover:text-black text-gray-600">Pricing</Link></li>
