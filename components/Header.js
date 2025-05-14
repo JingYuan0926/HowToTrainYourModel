@@ -1,11 +1,29 @@
 import { Button, Tabs, Tab, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Header() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
   const [selectedNav, setSelectedNav] = useState("Home");
+  const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Handle scroll events
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if scrolled past a threshold (e.g., 50px)
+      const scrolled = window.scrollY > 50;
+      setIsScrolled(scrolled);
+    };
+    
+    // Add scroll event listener
+    window.addEventListener("scroll", handleScroll);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   
   const handleConnectWallet = () => {
     if (accountId) {
@@ -18,9 +36,11 @@ export default function Header() {
   return (
     <Navbar 
       position="sticky" 
-      maxWidth="full" 
+      maxWidth={isScrolled ? "md" : "full"} 
       height="3rem"
-      className="py-4 px-6 border-b border-gray-200 bg-white"
+      className={`py-4 px-6 border-b border-gray-200 bg-white transition-all duration-300 ${
+        isScrolled ? "mx-auto rounded-lg shadow-md mt-2" : ""
+      }`}
       isBordered
     >
       {/* Left side - Logo */}
