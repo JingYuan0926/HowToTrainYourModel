@@ -1,10 +1,11 @@
 import { Button } from "@heroui/react";
 import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
-import React from "react";
+import React, { useState } from "react";
 
 export default function Header() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
+  const [selectedNav, setSelectedNav] = useState("Home");
   
   const handleConnectWallet = () => {
     if (accountId) {
@@ -13,6 +14,8 @@ export default function Header() {
       connectWallet();
     }
   };
+
+  const navItems = ["Home", "How it Works", "Features", "Pricing"];
 
   return (
     <header className="w-full py-4 px-6 flex justify-between items-center border-b border-gray-200">
@@ -30,14 +33,20 @@ export default function Header() {
       {/* Middle - Navigation */}
       <nav className="flex-grow flex justify-center">
         <ul className="flex gap-6 items-center">
-          <li>
-            <span className="bg-white border border-gray-200 rounded-full px-5 py-2 inline-block font-medium shadow-sm cursor-pointer">
-              Home
-            </span>
-          </li>
-          <li><span className="hover:text-black text-gray-600 cursor-pointer">How it Works</span></li>
-          <li><span className="hover:text-black text-gray-600 cursor-pointer">Features</span></li>
-          <li><span className="hover:text-black text-gray-600 cursor-pointer">Pricing</span></li>
+          {navItems.map((item) => (
+            <li key={item}>
+              <span 
+                className={`${
+                  selectedNav === item 
+                    ? "bg-white border border-gray-200 rounded-full px-5 py-2 shadow-sm font-medium" 
+                    : "text-gray-600 hover:text-black"
+                } cursor-pointer inline-block`}
+                onClick={() => setSelectedNav(item)}
+              >
+                {item}
+              </span>
+            </li>
+          ))}
         </ul>
       </nav>
 
