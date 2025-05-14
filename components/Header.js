@@ -1,11 +1,43 @@
-import { Button } from "@heroui/react";
+import { Button, Tabs, Tab, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Header() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
   const [selectedNav, setSelectedNav] = useState("Home");
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  
+  // Handle scroll events with smoother transition
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if scrolled past a threshold (e.g., 50px)
+      const scrolled = window.scrollY > 50;
+      setIsScrolled(scrolled);
+      
+      // Calculate scroll progress for smoother transition (0 to 1)
+      const progress = Math.min(1, window.scrollY / 100);
+      setScrollProgress(progress);
+    };
+    
+    // Add scroll event listener
+    window.addEventListener("scroll", handleScroll);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+  
+  // Calculate dynamic width based on scroll progress
+  const getNavbarWidth = () => {
+    // Start with 100% and reduce to medium size based on scroll progress
+    if (!isScrolled) return "100%";
+    
+    // When scrolled, set width based on the predefined size
+    return "var(--navbar-width-md)";
+  };
   
   const handleConnectWallet = () => {
     if (accountId) {
@@ -15,51 +47,71 @@ export default function Header() {
     }
   };
 
-  const navItems = ["Home", "How it Works", "Features", "Pricing"];
-
   return (
-    <header className="w-full py-4 px-6 flex justify-between items-center border-b border-gray-200">
-      {/* Left side - Logo */}
-      <div className="flex-shrink-0">
-        <Link href="/" className="flex items-center">
-          {/* Logo placeholder */}
-          <div className="h-10 w-10 bg-blue-600 rounded-md flex items-center justify-center text-white mr-2">
-            Logo
-          </div>
-          <span className="text-xl font-bold">SkyAgent</span>
-        </Link>
-      </div>
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
+      <Navbar 
+        position="relative" 
+        maxWidth={isScrolled ? "md" : "full"} 
+        height="3rem"
+        className={`py-4 px-6 border-b border-gray-200 bg-white transition-all duration-420 ease-in-out ${
+          isScrolled ? "mx-auto rounded-lg shadow-md mt-2 transform scale-98" : "w-full"
+        }`}
+        style={{
+          width: getNavbarWidth(),
+          "--navbar-width-md": "80%", // Custom property for medium width
+          transitionProperty: "width, border-radius, box-shadow, margin, transform",
+          transitionDuration: "420ms",
+          transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)"
+        }}
+        isBordered
+      >
+        {/* Left side - Logo */}
+        <NavbarBrand>
+          <Link href="/" className="flex items-center">
+            {/* Logo placeholder */}
+            <div className="h-10 w-10 bg-blue-600 rounded-md flex items-center justify-center text-white mr-2">
+              Logo
+            </div>
+            <span className="text-xl font-bold">HowToTrainYourModel</span>
+          </Link>
+        </NavbarBrand>
 
-      {/* Middle - Navigation */}
-      <nav className="flex-grow flex justify-center">
-        <ul className="flex gap-6 items-center">
-          {navItems.map((item) => (
-            <li key={item}>
-              <span 
-                className={`${
-                  selectedNav === item 
-                    ? "bg-white border border-gray-200 rounded-full px-5 py-2 shadow-sm font-medium" 
-                    : "text-gray-600 hover:text-black"
-                } cursor-pointer inline-block`}
-                onClick={() => setSelectedNav(item)}
-              >
-                {item}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </nav>
+        {/* Middle - Navigation with Tabs */}
+        <NavbarContent className="flex justify-center" justify="center">
+          <Tabs 
+            aria-label="Navigation" 
+            radius="full"
+            selectedKey={selectedNav}
+            onSelectionChange={setSelectedNav}
+            classNames={{
+              base: "mx-auto bg-white",
+              tabList: "gap-6 bg-white",
+              tab: "px-5 py-2 text-gray-600 data-[hover=true]:text-black data-[selected=true]:font-bold transition-colors",
+              cursor: "bg-white shadow-sm border border-gray-200",
+              panel: "bg-white"
+            }}
+            variant="light"
+          >
+            <Tab key="Home" title="Home" />
+            <Tab key="How it Works" title="How it Works" />
+            <Tab key="Features" title="Features" />
+            <Tab key="Pricing" title="Pricing" />
+          </Tabs>
+        </NavbarContent>
 
-      {/* Right side - Connect Wallet button */}
-      <div className="flex-shrink-0">
-        <Button 
-          color="primary" 
-          onPress={handleConnectWallet} 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
-        >
-          {accountId ? "Disconnect" : "Try for free"}
-        </Button>
-      </div>
-    </header>
+        {/* Right side - Connect Wallet button */}
+        <NavbarContent justify="end">
+          <NavbarItem>
+            <Button 
+              color="primary" 
+              onPress={handleConnectWallet} 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
+            >
+              {accountId ? "Disconnect" : "Try for free"}
+            </Button>
+          </NavbarItem>
+        </NavbarContent>
+      </Navbar>
+    </div>
   );
 } 
