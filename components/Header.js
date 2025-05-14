@@ -72,7 +72,7 @@ export default function Header() {
             <div className="h-10 w-10 bg-blue-600 rounded-md flex items-center justify-center text-white mr-2">
               Logo
             </div>
-            <span className="text-xl font-bold">SkyAgent</span>
+            <span className="text-xl font-bold">HowToTrainYourModel</span>
           </Link>
         </NavbarBrand>
 
