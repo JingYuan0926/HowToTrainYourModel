@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react";
+import { Button, Tabs, Tab } from "@heroui/react";
 import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
 import React, { useState } from "react";
@@ -15,8 +15,6 @@ export default function Header() {
     }
   };
 
-  const navItems = ["Home", "How it Works", "Features", "Pricing"];
-
   return (
     <header className="w-full py-4 px-6 flex justify-between items-center border-b border-gray-200">
       {/* Left side - Logo */}
@@ -30,24 +28,25 @@ export default function Header() {
         </Link>
       </div>
 
-      {/* Middle - Navigation */}
+      {/* Middle - Navigation with Tabs */}
       <nav className="flex-grow flex justify-center">
-        <ul className="flex gap-6 items-center">
-          {navItems.map((item) => (
-            <li key={item}>
-              <span 
-                className={`${
-                  selectedNav === item 
-                    ? "bg-white border border-gray-200 rounded-full px-5 py-2 shadow-sm font-medium" 
-                    : "text-gray-600 hover:text-black"
-                } cursor-pointer inline-block`}
-                onClick={() => setSelectedNav(item)}
-              >
-                {item}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <Tabs 
+          aria-label="Navigation" 
+          radius="full"
+          selectedKey={selectedNav}
+          onSelectionChange={setSelectedNav}
+          classNames={{
+            base: "mx-auto",
+            tabList: "gap-6",
+            tab: "px-5 py-2",
+            cursor: "bg-white shadow-sm border border-gray-200",
+          }}
+        >
+          <Tab key="Home" title="Home" />
+          <Tab key="How it Works" title="How it Works" />
+          <Tab key="Features" title="Features" />
+          <Tab key="Pricing" title="Pricing" />
+        </Tabs>
       </nav>
 
       {/* Right side - Connect Wallet button */}
