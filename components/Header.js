@@ -19,6 +19,7 @@ export default function Header() {
     <Navbar 
       position="sticky" 
       maxWidth="full" 
+      height="3rem"
       className="py-4 px-6 border-b border-gray-200 bg-white"
       isBordered
     >
