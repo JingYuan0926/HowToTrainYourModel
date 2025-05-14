@@ -30,10 +30,10 @@ export default function Header() {
       {/* Middle - Navigation */}
       <nav className="flex-grow flex justify-center">
         <ul className="flex gap-6">
-          <li><Link href="/" className="hover:text-blue-600 font-medium">Home</Link></li>
-          <li><Link href="/how-it-works" className="hover:text-blue-600 text-gray-600">How it Works</Link></li>
-          <li><Link href="/features" className="hover:text-blue-600 text-gray-600">Features</Link></li>
-          <li><Link href="/pricing" className="hover:text-blue-600 text-gray-600">Pricing</Link></li>
+          <li><Link href="/" className="hover:text-black font-medium">Home</Link></li>
+          <li><Link href="/how-it-works" className="hover:text-black text-gray-600">How it Works</Link></li>
+          <li><Link href="/features" className="hover:text-black text-gray-600">Features</Link></li>
+          <li><Link href="/pricing" className="hover:text-black text-gray-600">Pricing</Link></li>
         </ul>
       </nav>
 
