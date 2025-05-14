@@ -16,7 +16,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full py-4 px-6 flex justify-between items-center border-b border-gray-200">
+    <header className="w-full py-4 px-6 flex justify-between items-center border-b border-gray-200 bg-white">
       {/* Left side - Logo */}
       <div className="flex-shrink-0">
         <Link href="/" className="flex items-center">
@@ -36,11 +36,13 @@ export default function Header() {
           selectedKey={selectedNav}
           onSelectionChange={setSelectedNav}
           classNames={{
-            base: "mx-auto",
-            tabList: "gap-6",
-            tab: "px-5 py-2",
+            base: "mx-auto bg-white",
+            tabList: "gap-6 bg-white",
+            tab: "px-5 py-2 text-gray-600 data-[hover=true]:text-black data-[selected=true]:font-bold transition-colors",
             cursor: "bg-white shadow-sm border border-gray-200",
+            panel: "bg-white"
           }}
+          variant="light"
         >
           <Tab key="Home" title="Home" />
           <Tab key="How it Works" title="How it Works" />
