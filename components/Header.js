@@ -53,7 +53,7 @@ export default function Header() {
         position="relative" 
         maxWidth={isScrolled ? "md" : "full"} 
         height="3rem"
-        className={`py-4 px-6 border-b border-gray-200 transition-all duration-420 ease-in-out bg-transparent ${
+        className={`py-4 px-6 transition-all duration-420 ease-in-out bg-transparent ${
           isScrolled ? "mx-auto rounded-lg shadow-md mt-2 transform scale-98" : "w-full"
         }`}
         style={{
@@ -64,7 +64,7 @@ export default function Header() {
           transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
           backgroundColor: "transparent"
         }}
-        isBordered
+        isBordered={false}
       >
         {/* Left side - Logo */}
         <NavbarBrand>
