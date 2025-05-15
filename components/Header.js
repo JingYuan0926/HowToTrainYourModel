@@ -53,7 +53,7 @@ export default function Header() {
         position="relative" 
         maxWidth={isScrolled ? "md" : "full"} 
         height="3rem"
-        className={`py-4 px-6 border-b border-gray-200 bg-white transition-all duration-420 ease-in-out ${
+        className={`py-4 px-6 border-b border-gray-200 transition-all duration-420 ease-in-out bg-transparent ${
           isScrolled ? "mx-auto rounded-lg shadow-md mt-2 transform scale-98" : "w-full"
         }`}
         style={{
@@ -61,7 +61,8 @@ export default function Header() {
           "--navbar-width-md": "80%", // Custom property for medium width
           transitionProperty: "width, border-radius, box-shadow, margin, transform",
           transitionDuration: "420ms",
-          transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)"
+          transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+          backgroundColor: "transparent"
         }}
         isBordered
       >
@@ -84,11 +85,11 @@ export default function Header() {
             selectedKey={selectedNav}
             onSelectionChange={setSelectedNav}
             classNames={{
-              base: "mx-auto bg-white",
-              tabList: "gap-6 bg-white",
+              base: "mx-auto bg-transparent",
+              tabList: "gap-6 bg-transparent",
               tab: "px-5 py-2 text-gray-600 data-[hover=true]:text-black data-[selected=true]:font-bold transition-colors",
-              cursor: "bg-white shadow-sm border border-gray-200",
-              panel: "bg-white"
+              cursor: "bg-transparent shadow-sm border border-gray-200",
+              panel: "bg-transparent"
             }}
             variant="light"
           >
