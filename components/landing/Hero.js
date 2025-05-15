@@ -3,7 +3,7 @@ import { Button } from "@heroui/react";
 
 export default function Hero() {
   return (
-    <section className="w-full h-[100vh] flex flex-col justify-center items-center bg-gradient-to-b from-white to-blue-500 text-blue-900 border-b border-blue-300 snap-start">
+    <section className="w-full h-[100vh] flex flex-col justify-center items-center bg-gradient-to-b from-white via-white via-70% to-blue-500 text-blue-900 border-b border-blue-300 snap-start">
       <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full">
         <div className="mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
