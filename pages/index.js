@@ -9,7 +9,7 @@ import Footer from '../components/landing/Footer';
 
 export default function Home() {
   return (
-    <div>
+    <div className="w-[80%] mx-auto border-l border-r border-gray-300">
       <Hero />
       <Problem />
       <Solution />
