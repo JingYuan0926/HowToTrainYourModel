@@ -28,7 +28,7 @@ export default function Hero() {
             </p>
             
             {/* Animated Subscribe Button */}
-            <div className="flex justify-center items-center -mt-5">
+            <div className="flex justify-center items-center -mt-8">
               <AnimatedSubscribeButton className="w-48 px-8 py-3 h-12 bg-blue-600 hover:bg-blue-700 text-white">
                 <span className="group inline-flex items-center text-base font-medium">
                   Try Now
