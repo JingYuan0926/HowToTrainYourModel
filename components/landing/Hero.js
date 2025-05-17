@@ -25,16 +25,16 @@ export default function Hero() {
       <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full relative z-10">
         {/* Custom Machine Learning Models Shiny Button */}
         <div className="flex justify-center mb-6">
-          <ShinyButton className="text-sm border-blue-200 bg-white/50">
+          <ShinyButton className="text-sm border-black bg-white/50">
             Introducing custom machine learning models
           </ShinyButton>
         </div>
         
         <div className="mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight text-black">
             Collaborative AI Training Platform
           </h1>
-          <p className="text-xl md:text-2xl mb-12 mx-auto max-w-3xl">
+          <p className="text-xl md:text-2xl mb-12 mx-auto max-w-3xl text-gray-600">
             We're building a platform where everyone can collaborate to create and improve AI models collectively. 
             Contribute from anywhere and be part of shaping a smarter AI for all.
           </p>
