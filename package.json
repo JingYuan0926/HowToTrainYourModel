@@ -28,7 +28,7 @@
     "cobe": "^0.6.3",
     "framer-motion": "^12.8.0",
     "lucide-react": "^0.503.0",
-    "motion": "^12.9.2",
+    "motion": "^12.12.1",
     "near-api-js": "^5.1.1",
     "next": "15.3.1",
     "react": "^19.0.0",

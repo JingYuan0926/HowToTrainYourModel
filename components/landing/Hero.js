@@ -1,10 +1,35 @@
 import React from 'react';
 import { Button } from "@heroui/react";
+import { ShinyButton } from "@/components/magicui/shiny-button";
 
 export default function Hero() {
   return (
-    <section className="w-full h-[100vh] flex flex-col justify-center items-center bg-gradient-to-b from-white via-white via-70% to-blue-500 text-blue-900 border-b border-blue-300 snap-start">
-      <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full">
+    <section className="w-full h-[100vh] flex flex-col justify-center items-center relative text-blue-900 border-b border-blue-300 snap-start overflow-hidden">
+      {/* Parabolic gradient background */}
+      <div className="absolute inset-0 w-full h-full" style={{
+        background: `
+          radial-gradient(ellipse at 50% 120%, white 0%, white 60%, transparent 85%),
+          linear-gradient(to bottom, white 40%, rgba(59, 130, 246, 0.4) 100%)
+        `,
+        backgroundSize: '100% 100%',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}>
+        {/* Additional gradient elements to enhance parabola effect */}
+        <div className="absolute bottom-0 left-0 w-full h-1/5 bg-gradient-to-t from-blue-500 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-1/4 h-full bg-gradient-to-r from-blue-500/15 to-transparent"></div>
+        <div className="absolute bottom-0 right-0 w-1/4 h-full bg-gradient-to-l from-blue-500/15 to-transparent"></div>
+      </div>
+      
+      {/* Content */}
+      <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full relative z-10">
+        {/* Custom Machine Learning Models Shiny Button */}
+        <div className="flex justify-center mb-6">
+          <ShinyButton className="text-sm border-blue-200 bg-white/50">
+            Introducing custom machine learning models
+          </ShinyButton>
+        </div>
+        
         <div className="mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
             Collaborative AI Training Platform
