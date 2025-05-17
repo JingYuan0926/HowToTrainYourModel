@@ -24,6 +24,13 @@ export function useWallet() {
   const fetchBalance = async (id) => {
     if (!id) return;
     
+    // Add a check for testnet account on mainnet
+    if (NETWORK_ID === 'mainnet' && id.endsWith('.testnet')) {
+      console.warn(`Attempting to fetch balance for testnet account ${id} on mainnet. Please use a mainnet account.`);
+      setBalance("0.00");
+      return;
+    }
+    
     try {
       // Create a direct connection to the NEAR RPC
       const provider = new providers.JsonRpcProvider({ url: PROVIDER_URL });
