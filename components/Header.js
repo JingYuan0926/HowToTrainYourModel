@@ -53,14 +53,14 @@ export default function Header() {
       <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none" style={{ zIndex: 51 }}>
         <div className="w-full max-w-screen-xl mx-auto px-6 flex justify-center">
           {/* Fixed position navigation tabs */}
-          <div className="pointer-events-auto">
+          <div className="pointer-events-auto pt-4">
             <Tabs 
               aria-label="Navigation" 
               radius="full"
               selectedKey={selectedNav}
               onSelectionChange={setSelectedNav}
               classNames={{
-                base: "bg-transparent",
+                base: "bg-transparent mt-2",
                 tabList: "gap-6 bg-transparent",
                 tab: "px-5 py-2 text-gray-600 data-[hover=true]:text-black data-[selected=true]:font-bold transition-colors",
                 cursor: "bg-transparent shadow-sm border border-gray-200",
