@@ -7,17 +7,17 @@ export default function Hero() {
       {/* Parabolic gradient background */}
       <div className="absolute inset-0 w-full h-full" style={{
         background: `
-          radial-gradient(ellipse at 50% 120%, white 0%, white 50%, transparent 70%),
-          linear-gradient(to bottom, white 30%, rgba(59, 130, 246, 0.5) 100%)
+          radial-gradient(ellipse at 50% 120%, white 0%, white 60%, transparent 85%),
+          linear-gradient(to bottom, white 40%, rgba(59, 130, 246, 0.4) 100%)
         `,
         backgroundSize: '100% 100%',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}>
         {/* Additional gradient elements to enhance parabola effect */}
-        <div className="absolute bottom-0 left-0 w-full h-1/4 bg-gradient-to-t from-blue-500 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-blue-500/20 to-transparent"></div>
-        <div className="absolute bottom-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-500/20 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-full h-1/5 bg-gradient-to-t from-blue-500 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-1/4 h-full bg-gradient-to-r from-blue-500/15 to-transparent"></div>
+        <div className="absolute bottom-0 right-0 w-1/4 h-full bg-gradient-to-l from-blue-500/15 to-transparent"></div>
       </div>
       
       {/* Content */}
