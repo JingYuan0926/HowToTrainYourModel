@@ -2479,6 +2479,12 @@ function currentAccountId() {
   return str(env.read_register(0));
 }
 /**
+ * Returns the current block timestamp.
+ */
+function blockTimestamp() {
+  return env.block_timestamp();
+}
+/**
  * Returns the amount of NEAR attached to this function call.
  * Can only be called in payable functions.
  */
@@ -2573,14 +2579,6 @@ function promiseBatchCreate(accountId) {
  */
 function promiseBatchActionTransfer(promiseIndex, amount) {
   env.promise_batch_action_transfer(promiseIndex, amount);
-}
-/**
- * Executes the promise in the NEAR WASM virtual machine.
- *
- * @param promiseIndex - The index of the promise to execute.
- */
-function promiseReturn(promiseIndex) {
-  env.promise_return(promiseIndex);
 }
 
 class SubType {
@@ -2792,190 +2790,266 @@ function NearBindgen({
   };
 }
 
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _class, _class2;
-let CreditContract = (_dec = NearBindgen({}), _dec2 = initialize(), _dec3 = view(), _dec4 = view(), _dec5 = call({
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2;
+
+// One month in nanoseconds (approximated)
+const ONE_MONTH_NS = BigInt(30 * 24 * 60 * 60 * 1000000000);
+let SubscriptionContract = (_dec = NearBindgen({}), _dec2 = initialize(), _dec3 = call({
   payableFunction: true
-}), _dec6 = call({}), _dec7 = call({}), _dec8 = view(), _dec(_class = (_class2 = class CreditContract {
-  CREDIT_RATE = 1000; // 1 NEAR = 1000 credits
-  OWNER = "insidescoop.testnet";
+}), _dec4 = view(), _dec5 = view(), _dec6 = view(), _dec7 = call({}), _dec8 = call({}), _dec9 = call({}), _dec10 = call({}), _dec(_class = (_class2 = class SubscriptionContract {
+  // in yoctoNEAR
+  // maps account ID to subscription expiry timestamp
+
   constructor() {
-    this.credits = new LookupMap('credits_storage_v1');
-    this.pool = BigInt(0);
+    this.owner = '';
+    this.subscriptionPrice = BigInt(0);
+    this.subscribers = new LookupMap('subscribers_storage_v1');
   }
-  init() {
-    if (!this.credits) {
-      this.credits = new LookupMap('credits_storage_v1');
-    }
-    this.pool = BigInt(0);
-  }
-  get_credits({
-    account_id
+  init({
+    owner,
+    subscriptionPrice
   }) {
-    if (!this.credits) {
-      this.credits = new LookupMap('credits_storage_v1');
-      return 0;
+    this.owner = owner;
+    this.subscriptionPrice = BigInt(subscriptionPrice);
+    if (!this.subscribers) {
+      this.subscribers = new LookupMap('subscribers_storage_v1');
     }
-    return this.credits.get(account_id) || 0;
   }
-  get_pool_balance() {
-    return this.pool.toString();
+  subscribe() {
+    // Get the attached deposit
+    const deposit = attachedDeposit();
+
+    // Check if enough NEAR was attached
+    if (deposit < this.subscriptionPrice) {
+      throw new Error('Not enough deposit to subscribe. Required: ' + this.subscriptionPrice.toString());
+    }
+
+    // Get current time
+    const now = blockTimestamp();
+
+    // Get the subscriber's account ID
+    const subscriberId = predecessorAccountId();
+
+    // Calculate new expiry time
+    let expiry;
+    const currentExpiry = this.subscribers.get(subscriberId);
+    if (currentExpiry !== null && currentExpiry > now) {
+      // If subscription hasn't expired yet, add one month to current expiry
+      expiry = currentExpiry + ONE_MONTH_NS;
+    } else {
+      // New subscription or expired - one month from now
+      expiry = now + ONE_MONTH_NS;
+    }
+
+    // Update the subscription
+    this.subscribers.set(subscriberId, expiry);
+
+    // Transfer the payment to the contract owner
+    log(`Subscription payment of ${deposit.toString()} yoctoNEAR sent to ${this.owner}`);
+    const promise = promiseBatchCreate(this.owner);
+    promiseBatchActionTransfer(promise, deposit);
   }
-  deposit() {
-    const deposit_amount = attachedDeposit();
-    const account_id = predecessorAccountId();
-
-    // Calculate credits (1 NEAR = 1000 credits)
-    const new_credits = Number(deposit_amount) * this.CREDIT_RATE;
-
-    // Get current credits
-    const current_credits = this.credits.get(account_id) || 0;
-
-    // Update credits
-    this.credits.set(account_id, current_credits + new_credits);
-
-    // Add to pool
-    this.pool += deposit_amount;
-
-    // Log the transaction
-    log(`Deposited ${deposit_amount} NEAR for ${new_credits} credits by ${account_id}`);
-    log(`Pool balance: ${this.pool.toString()} NEAR`);
-  }
-  withdraw({
-    amount,
-    to
+  isSubscribed({
+    accountId
   }) {
-    // Only owner can withdraw
-    if (predecessorAccountId() !== this.OWNER) {
-      throw new Error("Only the owner can withdraw from the pool");
+    if (!this.subscribers) {
+      this.subscribers = new LookupMap('subscribers_storage_v1');
+      return false;
     }
-    const withdraw_amount = BigInt(amount);
+    const expiry = this.subscribers.get(accountId);
+    if (expiry === null) {
+      return false;
+    }
+    const now = blockTimestamp();
+    return expiry > now;
+  }
+  getSubscriptionExpiry({
+    accountId
+  }) {
+    if (!this.subscribers) {
+      this.subscribers = new LookupMap('subscribers_storage_v1');
+      return null;
+    }
+    const expiry = this.subscribers.get(accountId);
+    if (expiry === null) {
+      return null;
+    }
+    return expiry.toString();
+  }
+  getSubscriptionPrice() {
+    return this.subscriptionPrice.toString();
+  }
+  updateSubscriptionPrice({
+    newPrice
+  }) {
+    // Only the owner can update the price
+    if (predecessorAccountId() !== this.owner) {
+      throw new Error('Only the owner can update the subscription price');
+    }
+    this.subscriptionPrice = BigInt(newPrice);
+  }
+  cleanupExpiredSubscriptions({
+    accountIds
+  }) {
+    if (!this.subscribers) {
+      this.subscribers = new LookupMap('subscribers_storage_v1');
+      return;
+    }
+    const now = blockTimestamp();
+    for (const accountId of accountIds) {
+      const expiry = this.subscribers.get(accountId);
+      if (expiry !== null && expiry <= now) {
+        // Remove expired subscription
+        this.subscribers.remove(accountId);
+      }
+    }
+  }
 
-    // Check if pool has enough balance
-    if (withdraw_amount > this.pool) {
-      throw new Error("Insufficient pool balance");
+  // Add a repair function to fix the contract if it was deployed incorrectly
+  repairContract() {
+    // Only the owner can repair the contract
+    if (predecessorAccountId() !== this.owner) {
+      throw new Error('Only the owner can repair the contract');
     }
 
-    // Create transfer promise
-    const promise = promiseBatchCreate(to);
-    promiseBatchActionTransfer(promise, withdraw_amount);
-    promiseReturn(promise);
-
-    // Update pool balance
-    this.pool -= withdraw_amount;
-    log(`Withdrew ${withdraw_amount.toString()} NEAR to ${to}`);
-    log(`New pool balance: ${this.pool.toString()} NEAR`);
+    // Re-initialize the subscribers map with the correct prefix
+    this.subscribers = new LookupMap('subscribers_storage_v1');
+    log('Contract repaired successfully');
   }
-  use_credit() {
-    const account_id = predecessorAccountId();
-    const current_credits = this.credits.get(account_id) || 0;
-
-    // Check if user has enough credits
-    if (current_credits < 1) {
-      throw new Error("Insufficient credits");
+  useModel() {
+    const accountId = predecessorAccountId();
+    if (!this.subscribers) {
+      this.subscribers = new LookupMap('subscribers_storage_v1');
+      return false;
     }
-
-    // Deduct one credit
-    this.credits.set(account_id, current_credits - 1);
-
-    // Log the usage
-    log(`User ${account_id} used 1 credit. Remaining credits: ${current_credits - 1}`);
+    const expiry = this.subscribers.get(accountId);
+    if (expiry === null) {
+      return false;
+    }
+    const now = blockTimestamp();
+    return expiry > now;
   }
-  get_credit_rate() {
-    return this.CREDIT_RATE;
-  }
-}, _applyDecoratedDescriptor(_class2.prototype, "init", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "init"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_credits", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "get_credits"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_pool_balance", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "get_pool_balance"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "deposit", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "deposit"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "withdraw", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "withdraw"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "use_credit", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "use_credit"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_credit_rate", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "get_credit_rate"), _class2.prototype), _class2)) || _class);
-function get_credit_rate() {
-  const _state = CreditContract._getState();
-  if (!_state && CreditContract._requireInit()) {
+}, _applyDecoratedDescriptor(_class2.prototype, "init", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "init"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "subscribe", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "subscribe"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "isSubscribed", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "isSubscribed"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getSubscriptionExpiry", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "getSubscriptionExpiry"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getSubscriptionPrice", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "getSubscriptionPrice"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "updateSubscriptionPrice", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "updateSubscriptionPrice"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "cleanupExpiredSubscriptions", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "cleanupExpiredSubscriptions"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "repairContract", [_dec9], Object.getOwnPropertyDescriptor(_class2.prototype, "repairContract"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "useModel", [_dec10], Object.getOwnPropertyDescriptor(_class2.prototype, "useModel"), _class2.prototype), _class2)) || _class);
+function useModel() {
+  const _state = SubscriptionContract._getState();
+  if (!_state && SubscriptionContract._requireInit()) {
     throw new Error("Contract must be initialized");
   }
-  const _contract = CreditContract._create();
+  const _contract = SubscriptionContract._create();
   if (_state) {
-    CreditContract._reconstruct(_contract, _state);
+    SubscriptionContract._reconstruct(_contract, _state);
   }
-  const _args = CreditContract._getArgs();
-  const _result = _contract.get_credit_rate(_args);
-  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(CreditContract._serialize(_result, true));
+  const _args = SubscriptionContract._getArgs();
+  const _result = _contract.useModel(_args);
+  SubscriptionContract._saveToStorage(_contract);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
 }
-function use_credit() {
-  const _state = CreditContract._getState();
-  if (!_state && CreditContract._requireInit()) {
+function repairContract() {
+  const _state = SubscriptionContract._getState();
+  if (!_state && SubscriptionContract._requireInit()) {
     throw new Error("Contract must be initialized");
   }
-  const _contract = CreditContract._create();
+  const _contract = SubscriptionContract._create();
   if (_state) {
-    CreditContract._reconstruct(_contract, _state);
+    SubscriptionContract._reconstruct(_contract, _state);
   }
-  const _args = CreditContract._getArgs();
-  const _result = _contract.use_credit(_args);
-  CreditContract._saveToStorage(_contract);
-  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(CreditContract._serialize(_result, true));
+  const _args = SubscriptionContract._getArgs();
+  const _result = _contract.repairContract(_args);
+  SubscriptionContract._saveToStorage(_contract);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
 }
-function withdraw() {
-  const _state = CreditContract._getState();
-  if (!_state && CreditContract._requireInit()) {
+function cleanupExpiredSubscriptions() {
+  const _state = SubscriptionContract._getState();
+  if (!_state && SubscriptionContract._requireInit()) {
     throw new Error("Contract must be initialized");
   }
-  const _contract = CreditContract._create();
+  const _contract = SubscriptionContract._create();
   if (_state) {
-    CreditContract._reconstruct(_contract, _state);
+    SubscriptionContract._reconstruct(_contract, _state);
   }
-  const _args = CreditContract._getArgs();
-  const _result = _contract.withdraw(_args);
-  CreditContract._saveToStorage(_contract);
-  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(CreditContract._serialize(_result, true));
+  const _args = SubscriptionContract._getArgs();
+  const _result = _contract.cleanupExpiredSubscriptions(_args);
+  SubscriptionContract._saveToStorage(_contract);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
 }
-function deposit() {
-  const _state = CreditContract._getState();
-  if (!_state && CreditContract._requireInit()) {
+function updateSubscriptionPrice() {
+  const _state = SubscriptionContract._getState();
+  if (!_state && SubscriptionContract._requireInit()) {
     throw new Error("Contract must be initialized");
   }
-  const _contract = CreditContract._create();
+  const _contract = SubscriptionContract._create();
   if (_state) {
-    CreditContract._reconstruct(_contract, _state);
+    SubscriptionContract._reconstruct(_contract, _state);
   }
-  const _args = CreditContract._getArgs();
-  const _result = _contract.deposit(_args);
-  CreditContract._saveToStorage(_contract);
-  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(CreditContract._serialize(_result, true));
+  const _args = SubscriptionContract._getArgs();
+  const _result = _contract.updateSubscriptionPrice(_args);
+  SubscriptionContract._saveToStorage(_contract);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
 }
-function get_pool_balance() {
-  const _state = CreditContract._getState();
-  if (!_state && CreditContract._requireInit()) {
+function getSubscriptionPrice() {
+  const _state = SubscriptionContract._getState();
+  if (!_state && SubscriptionContract._requireInit()) {
     throw new Error("Contract must be initialized");
   }
-  const _contract = CreditContract._create();
+  const _contract = SubscriptionContract._create();
   if (_state) {
-    CreditContract._reconstruct(_contract, _state);
+    SubscriptionContract._reconstruct(_contract, _state);
   }
-  const _args = CreditContract._getArgs();
-  const _result = _contract.get_pool_balance(_args);
-  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(CreditContract._serialize(_result, true));
+  const _args = SubscriptionContract._getArgs();
+  const _result = _contract.getSubscriptionPrice(_args);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
 }
-function get_credits() {
-  const _state = CreditContract._getState();
-  if (!_state && CreditContract._requireInit()) {
+function getSubscriptionExpiry() {
+  const _state = SubscriptionContract._getState();
+  if (!_state && SubscriptionContract._requireInit()) {
     throw new Error("Contract must be initialized");
   }
-  const _contract = CreditContract._create();
+  const _contract = SubscriptionContract._create();
   if (_state) {
-    CreditContract._reconstruct(_contract, _state);
+    SubscriptionContract._reconstruct(_contract, _state);
   }
-  const _args = CreditContract._getArgs();
-  const _result = _contract.get_credits(_args);
-  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(CreditContract._serialize(_result, true));
+  const _args = SubscriptionContract._getArgs();
+  const _result = _contract.getSubscriptionExpiry(_args);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
+}
+function isSubscribed() {
+  const _state = SubscriptionContract._getState();
+  if (!_state && SubscriptionContract._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+  const _contract = SubscriptionContract._create();
+  if (_state) {
+    SubscriptionContract._reconstruct(_contract, _state);
+  }
+  const _args = SubscriptionContract._getArgs();
+  const _result = _contract.isSubscribed(_args);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
+}
+function subscribe() {
+  const _state = SubscriptionContract._getState();
+  if (!_state && SubscriptionContract._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+  const _contract = SubscriptionContract._create();
+  if (_state) {
+    SubscriptionContract._reconstruct(_contract, _state);
+  }
+  const _args = SubscriptionContract._getArgs();
+  const _result = _contract.subscribe(_args);
+  SubscriptionContract._saveToStorage(_contract);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
 }
 function init() {
-  const _state = CreditContract._getState();
+  const _state = SubscriptionContract._getState();
   if (_state) {
     throw new Error("Contract already initialized");
   }
-  const _contract = CreditContract._create();
-  const _args = CreditContract._getArgs();
+  const _contract = SubscriptionContract._create();
+  const _args = SubscriptionContract._getArgs();
   const _result = _contract.init(_args);
-  CreditContract._saveToStorage(_contract);
-  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(CreditContract._serialize(_result, true));
+  SubscriptionContract._saveToStorage(_contract);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(SubscriptionContract._serialize(_result, true));
 }
 
-export { deposit, get_credit_rate, get_credits, get_pool_balance, init, use_credit, withdraw };
+export { cleanupExpiredSubscriptions, getSubscriptionExpiry, getSubscriptionPrice, init, isSubscribed, repairContract, subscribe, updateSubscriptionPrice, useModel };
 //# sourceMappingURL=hello_near.js.map

@@ -41,11 +41,11 @@ export default function KeyFeatures() {
   ];
 
   return (
-    <section className="w-full py-20 bg-gray-50">
-      <div className="container mx-auto px-6">
+    <section className="w-full h-[100vh] flex flex-col justify-center items-center bg-white border-b border-gray-200 snap-start">
+      <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full">
         <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center">Key Features</h2>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           {features.map((feature, index) => (
             <div key={index} className="bg-white rounded-xl shadow-lg p-8 transform transition duration-300 hover:scale-105">
               <div className="text-indigo-600 mb-5">
