@@ -23,7 +23,7 @@ export default function Hero() {
               Collaborative AI Training Platform
             </h1>
             <p className="text-xl md:text-2xl mb-16 mx-auto max-w-3xl text-gray-600">
-              We're building a platform where everyone can collaborate to create and improve AI models collectively. 
+              We&apos;re building a platform where everyone can collaborate to create and improve AI models collectively. 
               Contribute from anywhere and be part of shaping a smarter AI for all.
             </p>
             

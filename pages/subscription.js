@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react';
-import { connect, Contract, keyStores, utils, WalletConnection } from 'near-api-js';
 import { parseNearAmount, formatNearAmount } from 'near-api-js/lib/utils/format';
 
 // Configuration for connecting to NEAR mainnet
-const config = {
-  networkId: 'mainnet',
-  keyStore: new keyStores.BrowserLocalStorageKeyStore(),
-  nodeUrl: 'https://rpc.mainnet.near.org',
-  walletUrl: 'https://wallet.mainnet.near.org',
-  helperUrl: 'https://helper.mainnet.near.org',
-  explorerUrl: 'https://explorer.mainnet.near.org',
+const getConfig = () => {
+  if (typeof window === 'undefined') return null;
+  
+  const { keyStores } = require('near-api-js');
+  return {
+    networkId: 'mainnet',
+    keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+    nodeUrl: 'https://rpc.mainnet.near.org',
+    walletUrl: 'https://wallet.mainnet.near.org',
+    helperUrl: 'https://helper.mainnet.near.org',
+    explorerUrl: 'https://explorer.mainnet.near.org',
+  };
 };
 
 // Contract ID on mainnet
@@ -38,6 +42,20 @@ export default function ModelPage() {
     const initNear = async () => {
       try {
         setIsLoading(true);
+        
+        // Only initialize NEAR on client-side
+        if (typeof window === 'undefined') {
+          setIsLoading(false);
+          return;
+        }
+
+        const { connect, Contract, WalletConnection } = await import('near-api-js');
+        const config = getConfig();
+        
+        if (!config) {
+          throw new Error('Failed to initialize NEAR configuration');
+        }
+
         // Connect to NEAR
         const near = await connect(config);
         setNearConnection(near);
@@ -53,9 +71,6 @@ export default function ModelPage() {
         if (signedIn) {
           const id = wallet.getAccountId();
           setAccountId(id);
-          
-          // Check if the user is the contract owner
-          // This would typically require querying the contract for owner info
           
           // Create contract interface
           const contractObj = new Contract(wallet.account(), CONTRACT_ID, {
