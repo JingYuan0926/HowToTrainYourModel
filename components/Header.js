@@ -52,8 +52,12 @@ export default function Header() {
       {/* Container with fixed position and width for the navigation tabs */}
       <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none" style={{ zIndex: 51 }}>
         <div className="w-full max-w-screen-xl mx-auto px-6 flex justify-center">
-          {/* Fixed position navigation tabs - moved slightly right with ml-6 */}
-          <div className="pointer-events-auto pt-4 ml-8">
+          {/* Fixed position navigation tabs - moved slightly right with ml-8 */}
+          <div 
+            className={`pointer-events-auto pt-4 ml-8 transition-transform duration-420 ease-in-out ${
+              isScrolled ? "transform translate-y-[5px]" : ""
+            }`}
+          >
             <Tabs 
               aria-label="Navigation" 
               radius="full"
