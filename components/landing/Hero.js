@@ -36,7 +36,7 @@ export default function Hero() {
           <div className="flex justify-center">
             <AnimatedSubscribeButton className="w-48 px-8 py-3 h-12 bg-blue-600 hover:bg-blue-700 text-white">
               <span className="group inline-flex items-center text-base font-medium">
-                Try for free
+                Try Now
                 <ChevronRightIcon className="ml-2 size-4 transition-transform duration-300 group-hover:translate-x-1" />
               </span>
               <span className="group inline-flex items-center text-base font-medium">
