@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from "@heroui/react";
-import { ShinyButton } from "@/components/magicui/shiny-button";
+import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
+import { CheckIcon, ChevronRightIcon } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -23,13 +23,6 @@ export default function Hero() {
       
       {/* Content */}
       <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full relative z-10">
-        {/* Custom Machine Learning Models Shiny Button */}
-        <div className="flex justify-center mb-6">
-          <ShinyButton className="text-sm border-black bg-white/50">
-            Introducing custom machine learning models
-          </ShinyButton>
-        </div>
-        
         <div className="mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight text-black">
             Collaborative AI Training Platform
@@ -38,13 +31,19 @@ export default function Hero() {
             We're building a platform where everyone can collaborate to create and improve AI models collectively. 
             Contribute from anywhere and be part of shaping a smarter AI for all.
           </p>
-          <div className="flex flex-col md:flex-row justify-center gap-4">
-            <Button size="lg" color="blue" className="font-semibold px-8">
-              Get Started
-            </Button>
-            <Button size="lg" variant="outlined" color="blue" className="font-semibold px-8">
-              Learn More
-            </Button>
+          
+          {/* Animated Subscribe Button */}
+          <div className="flex justify-center">
+            <AnimatedSubscribeButton className="w-48 px-8 py-3 h-12 bg-blue-600 hover:bg-blue-700 text-white">
+              <span className="group inline-flex items-center text-base font-medium">
+                Try for free
+                <ChevronRightIcon className="ml-2 size-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </span>
+              <span className="group inline-flex items-center text-base font-medium">
+                <CheckIcon className="mr-2 size-4" />
+                Started
+              </span>
+            </AnimatedSubscribeButton>
           </div>
         </div>
       </div>
