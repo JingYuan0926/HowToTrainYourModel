@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from "@heroui/react";
+import { ShinyButton } from "@/components/magicui/shiny-button";
 
 export default function Hero() {
   return (
@@ -22,6 +23,13 @@ export default function Hero() {
       
       {/* Content */}
       <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full relative z-10">
+        {/* Custom Machine Learning Models Shiny Button */}
+        <div className="flex justify-center mb-6">
+          <ShinyButton className="text-sm border-blue-200 bg-white/50">
+            Introducing custom machine learning models
+          </ShinyButton>
+        </div>
+        
         <div className="mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
             Collaborative AI Training Platform
