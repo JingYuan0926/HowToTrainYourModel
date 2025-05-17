@@ -2,6 +2,8 @@ import { Button, Tabs, Tab, Navbar, NavbarBrand, NavbarContent, NavbarItem } fro
 import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
 import React, { useState, useEffect } from "react";
+import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
+import { CheckIcon, ChevronRightIcon } from "lucide-react";
 
 export default function Header() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
@@ -117,13 +119,20 @@ export default function Header() {
         {/* Right side - Connect Wallet button with fixed width to maintain spacing */}
         <NavbarContent justify="end" className="transition-all duration-420 w-[130px]">
           <NavbarItem>
-            <Button 
-              color="primary" 
-              onPress={handleConnectWallet} 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
+            <AnimatedSubscribeButton 
+              onClick={handleConnectWallet}
+              className="w-28 px-4 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white"
+              subscribeStatus={!!accountId}
             >
-              {accountId ? "Disconnect" : "Connect Wallet"}
-            </Button>
+              <span className="group inline-flex items-center text-sm font-medium">
+                Try Now
+                <ChevronRightIcon className="ml-2 size-3 transition-transform duration-300 group-hover:translate-x-1" />
+              </span>
+              <span className="group inline-flex items-center text-sm font-medium">
+                <CheckIcon className="mr-1 size-3" />
+                Active
+              </span>
+            </AnimatedSubscribeButton>
           </NavbarItem>
         </NavbarContent>
       </Navbar>
