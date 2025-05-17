@@ -4,6 +4,7 @@ import { useWallet } from "./ConnectWallet";
 import React, { useState, useEffect } from "react";
 import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
+import Image from "next/image";
 
 export default function Header() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
@@ -103,10 +104,14 @@ export default function Header() {
         {/* Left side - Logo with fixed width to maintain consistent spacing */}
         <NavbarBrand className="transition-all duration-420 w-[130px]">
           <Link href="/" className="flex items-center">
-            {/* Logo placeholder */}
-            <div className="h-10 w-10 bg-blue-600 rounded-md flex items-center justify-center text-white mr-2">
-              Logo
-            </div>
+            {/* Logo */}
+            <Image
+              src="/HTTYMLogo.png"
+              alt="HTTYM Logo"
+              width={40}
+              height={40}
+              className="mr-2"
+            />
             <span className="text-xl font-bold">HTTYM</span>
           </Link>
         </NavbarBrand>
