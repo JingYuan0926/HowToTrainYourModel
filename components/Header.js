@@ -122,7 +122,7 @@ export default function Header() {
               onPress={handleConnectWallet} 
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
             >
-              {accountId ? "Disconnect" : "Try for free"}
+              {accountId ? "Disconnect" : "Connect Wallet"}
             </Button>
           </NavbarItem>
         </NavbarContent>
