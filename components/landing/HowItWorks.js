@@ -1,4 +1,8 @@
 import React from 'react';
+import TopLeft from '../howitworks/TopLeft';
+import TopRight from '../howitworks/TopRight';
+import BottomLeft from '../howitworks/BottomLeft';
+import BottomRight from '../howitworks/BottomRight';
 
 export default function HowItWorks() {
   return (
@@ -26,18 +30,10 @@ export default function HowItWorks() {
             
             {/* Grid content - each rectangle with equal heights */}
             <div className="grid grid-cols-2 h-full">
-              <div className="relative p-8">
-                {/* Top-left content */}
-              </div>
-              <div className="relative p-8">
-                {/* Top-right content */}
-              </div>
-              <div className="relative p-8">
-                {/* Bottom-left content */}
-              </div>
-              <div className="relative p-8">
-                {/* Bottom-right content */}
-              </div>
+              <TopLeft />
+              <TopRight />
+              <BottomLeft />
+              <BottomRight />
             </div>
           </div>
         </div>
