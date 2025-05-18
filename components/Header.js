@@ -142,11 +142,8 @@ export default function Header() {
     
     // Only scroll if on the home page
     if (router.pathname !== '/') {
-      // Navigate to home page with hash
-      router.push({
-        pathname: '/',
-        hash: getSectionIdFromKey(key)
-      });
+      // Navigate to home page without hash
+      router.push('/');
       return;
     }
     
@@ -155,8 +152,7 @@ export default function Header() {
     const section = document.getElementById(sectionId);
     
     if (section) {
-      // Update URL hash silently - do this first to avoid flickering
-      history.pushState({}, '', `#${sectionId}`);
+      // No longer updating URL hash
       
       // Use requestAnimationFrame to ensure smooth animation
       requestAnimationFrame(() => {
