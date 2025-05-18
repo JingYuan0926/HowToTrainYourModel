@@ -15,6 +15,9 @@ export default function Header() {
   const router = useRouter();
   const isManualScrolling = useRef(false);
   
+  // Determine if header should be shrunk (when scrolled OR not on home section)
+  const shouldShrink = isScrolled || (selectedNav !== "Home");
+  
   // Handle URL hash navigation on initial load
   useEffect(() => {
     if (router.pathname === '/' && router.asPath.includes('#')) {
@@ -112,13 +115,13 @@ export default function Header() {
     };
   }, [router.pathname, selectedNav]);
   
-  // Calculate dynamic width based on scroll progress
+  // Calculate dynamic width based on scroll progress and current section
   const getNavbarWidth = () => {
-    // Start with 100% and reduce to medium size based on scroll progress
-    if (!isScrolled) return "100%";
+    // Shrink when scrolled down OR when not on home section
+    if (shouldShrink) return "var(--navbar-width-md)";
     
-    // When scrolled, set width based on the predefined size
-    return "var(--navbar-width-md)";
+    // Otherwise stay at full width (only at top AND on home section)
+    return "100%";
   };
   
   const handleConnectWallet = () => {
@@ -191,7 +194,7 @@ export default function Header() {
           {/* Fixed position navigation tabs - moved slightly right with ml-8 */}
           <div 
             className={`pointer-events-auto pt-4 ml-8 transition-transform duration-420 ease-in-out ${
-              isScrolled ? "transform translate-y-[5px]" : ""
+              shouldShrink ? "transform translate-y-[5px]" : ""
             }`}
           >
             <Tabs 
@@ -220,10 +223,10 @@ export default function Header() {
 
       <Navbar 
         position="relative" 
-        maxWidth={isScrolled ? "md" : "full"} 
+        maxWidth={shouldShrink ? "md" : "full"} 
         height="3rem"
         className={`py-4 px-6 transition-all duration-420 ease-in-out bg-transparent ${
-          isScrolled ? "mx-auto rounded-lg shadow-md mt-2 transform scale-98" : "w-full"
+          shouldShrink ? "mx-auto rounded-lg shadow-md mt-2 transform scale-98" : "w-full"
         }`}
         style={{
           width: getNavbarWidth(),
