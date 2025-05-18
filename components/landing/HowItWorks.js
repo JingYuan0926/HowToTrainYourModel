@@ -2,8 +2,23 @@ import React from 'react';
 
 export default function HowItWorks() {
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
+    <section className="py-20 bg-gray-50 relative">
+      {/* Full-width Grid with continuous lines - positioned relative to the section */}
+      <div className="absolute top-0 left-0 w-full h-full">
+        {/* Horizontal line - top */}
+        <div className="absolute top-0 left-0 w-full h-px bg-gray-300"></div>
+        
+        {/* Horizontal line - center */}
+        <div className="absolute top-1/2 left-0 w-full h-px bg-gray-300 transform -translate-y-1/2"></div>
+        
+        {/* Horizontal line - bottom */}
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gray-300"></div>
+        
+        {/* Vertical line */}
+        <div className="absolute left-1/2 top-0 w-px h-full bg-gray-300 transform -translate-x-1/2"></div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Introduction Section */}
         <div className="text-center mb-20 max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold mb-6 text-gray-900">Secure ML Models at Your Fingertips</h2>
@@ -12,20 +27,21 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        {/* Simple 2x2 Grid */}
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-2 gap-6">
-            {/* Top-left square */}
-            <div className="aspect-square border border-gray-300 rounded-lg bg-white"></div>
-            
-            {/* Top-right square */}
-            <div className="aspect-square border border-gray-300 rounded-lg bg-white"></div>
-            
-            {/* Bottom-left square */}
-            <div className="aspect-square border border-gray-300 rounded-lg bg-white"></div>
-            
-            {/* Bottom-right square */}
-            <div className="aspect-square border border-gray-300 rounded-lg bg-white"></div>
+        {/* Grid content - each quadrant */}
+        <div className="max-w-5xl mx-auto aspect-square">
+          <div className="grid grid-cols-2 h-full">
+            <div className="relative p-8">
+              {/* Top-left content */}
+            </div>
+            <div className="relative p-8">
+              {/* Top-right content */}
+            </div>
+            <div className="relative p-8">
+              {/* Bottom-left content */}
+            </div>
+            <div className="relative p-8">
+              {/* Bottom-right content */}
+            </div>
           </div>
         </div>
       </div>
