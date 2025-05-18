@@ -2,6 +2,7 @@ import React from 'react';
 import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import { WarpBackground } from "@/components/magicui/warp-background";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -39,6 +40,17 @@ export default function Hero() {
                   Started
                 </span>
               </AnimatedSubscribeButton>
+            </div>
+            
+            {/* Built on NEAR SVG */}
+            <div className="flex justify-center mt-12">
+              <Image 
+                src="/built_on.svg" 
+                alt="Built on NEAR" 
+                width={240} 
+                height={40} 
+                className="opacity-60 hover:opacity-100 transition-opacity"
+              />
             </div>
           </div>
         </div>

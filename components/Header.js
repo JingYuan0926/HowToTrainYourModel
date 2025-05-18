@@ -1,20 +1,65 @@
 import { Button, Tabs, Tab, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function Header() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
   const [selectedNav, setSelectedNav] = useState("Home");
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const router = useRouter();
+  const isManualScrolling = useRef(false);
+  
+  // Handle URL hash navigation on initial load
+  useEffect(() => {
+    if (router.pathname === '/' && router.asPath.includes('#')) {
+      const hash = router.asPath.split('#')[1];
+      setTimeout(() => {
+        const section = document.getElementById(hash);
+        if (section) {
+          isManualScrolling.current = true;
+          window.scrollTo({
+            top: section.offsetTop - 80,
+            behavior: 'smooth'
+          });
+          
+          // Update selected nav based on the hash
+          const navKey = getNavKeyFromSectionId(hash);
+          if (navKey) {
+            setSelectedNav(navKey);
+          }
+          
+          // Reset the flag after animation completes
+          setTimeout(() => {
+            isManualScrolling.current = false;
+          }, 800); // Slightly longer than typical scroll animation
+        }
+      }, 100); // Small delay to ensure DOM is fully loaded
+    }
+  }, [router.asPath, router.pathname]);
+  
+  // Helper function to get nav key from section ID
+  const getNavKeyFromSectionId = (sectionId) => {
+    const mapping = {
+      "home": "Home",
+      "how-it-works": "How it Works",
+      "features": "Features",
+      "pricing": "Pricing"
+    };
+    return mapping[sectionId] || "Home";
+  };
   
   // Handle scroll events with smoother transition
   useEffect(() => {
     const handleScroll = () => {
+      // Skip processing if manual scrolling is in progress
+      if (isManualScrolling.current) return;
+      
       // Check if scrolled past a threshold (e.g., 50px)
       const scrolled = window.scrollY > 50;
       setIsScrolled(scrolled);
@@ -22,6 +67,40 @@ export default function Header() {
       // Calculate scroll progress for smoother transition (0 to 1)
       const progress = Math.min(1, window.scrollY / 100);
       setScrollProgress(progress);
+      
+      // Update active tab based on scroll position
+      updateActiveTabOnScroll();
+    };
+    
+    // Function to update the active tab based on scroll position
+    const updateActiveTabOnScroll = () => {
+      // Only run on home page
+      if (router.pathname !== '/') return;
+      
+      const sections = {
+        "Home": document.getElementById("home"),
+        "How it Works": document.getElementById("how-it-works"),
+        "Features": document.getElementById("features"),
+        "Pricing": document.getElementById("pricing")
+      };
+      
+      // Get current scroll position
+      const scrollPosition = window.scrollY + 100; // Add offset to account for header
+      
+      // Find which section is currently in view
+      for (const [key, section] of Object.entries(sections)) {
+        if (!section) continue;
+        
+        const sectionTop = section.offsetTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+          if (selectedNav !== key) {
+            setSelectedNav(key);
+          }
+          break;
+        }
+      }
     };
     
     // Add scroll event listener
@@ -31,7 +110,7 @@ export default function Header() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [router.pathname, selectedNav]);
   
   // Calculate dynamic width based on scroll progress
   const getNavbarWidth = () => {
@@ -49,6 +128,64 @@ export default function Header() {
       connectWallet();
     }
   };
+  
+  // Handle tab navigation click - improved to reduce flickering
+  const handleNavClick = (key) => {
+    // Prevent acting on the same tab multiple times
+    if (selectedNav === key) return;
+    
+    // Set flag to prevent scroll listener from changing nav during animation
+    isManualScrolling.current = true;
+    
+    // Update state first
+    setSelectedNav(key);
+    
+    // Only scroll if on the home page
+    if (router.pathname !== '/') {
+      // Navigate to home page with hash
+      router.push({
+        pathname: '/',
+        hash: getSectionIdFromKey(key)
+      });
+      return;
+    }
+    
+    // Get the section id based on the tab key
+    const sectionId = getSectionIdFromKey(key);
+    const section = document.getElementById(sectionId);
+    
+    if (section) {
+      // Update URL hash silently - do this first to avoid flickering
+      history.pushState({}, '', `#${sectionId}`);
+      
+      // Use requestAnimationFrame to ensure smooth animation
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: section.offsetTop - 80, // Offset to account for the header
+          behavior: 'smooth'
+        });
+        
+        // Reset manual scrolling flag after animation finishes
+        setTimeout(() => {
+          isManualScrolling.current = false;
+        }, 800); // Duration slightly longer than typical scroll animation
+      });
+    } else {
+      // In case section not found, reset the flag
+      isManualScrolling.current = false;
+    }
+  };
+  
+  // Helper function to get section ID from tab key
+  const getSectionIdFromKey = (key) => {
+    const mapping = {
+      "Home": "home",
+      "How it Works": "how-it-works",
+      "Features": "features",
+      "Pricing": "pricing"
+    };
+    return mapping[key] || "home";
+  };
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
@@ -65,7 +202,7 @@ export default function Header() {
               aria-label="Navigation" 
               radius="full"
               selectedKey={selectedNav}
-              onSelectionChange={setSelectedNav}
+              onSelectionChange={handleNavClick}
               classNames={{
                 base: "bg-transparent mt-2",
                 tabList: "gap-6 bg-transparent",
@@ -74,6 +211,7 @@ export default function Header() {
                 panel: "bg-transparent"
               }}
               variant="light"
+              disableAnimation={false}
             >
               <Tab key="Home" title="Home" />
               <Tab key="How it Works" title="How it Works" />
