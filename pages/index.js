@@ -13,10 +13,18 @@ import Pricing from '../components/landing/Pricing';
 export default function Home() {
   return (
     <div className="w-[80%] mx-auto border-l border-r border-gray-300">
-      <Hero />
-      <HowItWorks />
-      <Features />
-      <Pricing />
+      <section id="home">
+        <Hero />
+      </section>
+      <section id="how-it-works">
+        <HowItWorks />
+      </section>
+      <section id="features">
+        <Features />
+      </section>
+      <section id="pricing">
+        <Pricing />
+      </section>
       <Footer />
     </div>
   );

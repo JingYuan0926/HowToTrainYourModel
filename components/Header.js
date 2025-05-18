@@ -5,12 +5,47 @@ import React, { useState, useEffect } from "react";
 import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function Header() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
   const [selectedNav, setSelectedNav] = useState("Home");
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const router = useRouter();
+  
+  // Handle URL hash navigation on initial load
+  useEffect(() => {
+    if (router.pathname === '/' && router.asPath.includes('#')) {
+      const hash = router.asPath.split('#')[1];
+      setTimeout(() => {
+        const section = document.getElementById(hash);
+        if (section) {
+          window.scrollTo({
+            top: section.offsetTop - 80,
+            behavior: 'smooth'
+          });
+          
+          // Update selected nav based on the hash
+          const navKey = getNavKeyFromSectionId(hash);
+          if (navKey) {
+            setSelectedNav(navKey);
+          }
+        }
+      }, 100); // Small delay to ensure DOM is fully loaded
+    }
+  }, [router.asPath, router.pathname]);
+  
+  // Helper function to get nav key from section ID
+  const getNavKeyFromSectionId = (sectionId) => {
+    const mapping = {
+      "home": "Home",
+      "how-it-works": "How it Works",
+      "features": "Features",
+      "pricing": "Pricing"
+    };
+    return mapping[sectionId] || "Home";
+  };
   
   // Handle scroll events with smoother transition
   useEffect(() => {
@@ -22,6 +57,38 @@ export default function Header() {
       // Calculate scroll progress for smoother transition (0 to 1)
       const progress = Math.min(1, window.scrollY / 100);
       setScrollProgress(progress);
+      
+      // Update active tab based on scroll position
+      updateActiveTabOnScroll();
+    };
+    
+    // Function to update the active tab based on scroll position
+    const updateActiveTabOnScroll = () => {
+      // Only run on home page
+      if (router.pathname !== '/') return;
+      
+      const sections = {
+        "Home": document.getElementById("home"),
+        "How it Works": document.getElementById("how-it-works"),
+        "Features": document.getElementById("features"),
+        "Pricing": document.getElementById("pricing")
+      };
+      
+      // Get current scroll position
+      const scrollPosition = window.scrollY + 100; // Add offset to account for header
+      
+      // Find which section is currently in view
+      for (const [key, section] of Object.entries(sections)) {
+        if (!section) continue;
+        
+        const sectionTop = section.offsetTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+          setSelectedNav(key);
+          break;
+        }
+      }
     };
     
     // Add scroll event listener
@@ -31,7 +98,7 @@ export default function Header() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [router.pathname]);
   
   // Calculate dynamic width based on scroll progress
   const getNavbarWidth = () => {
@@ -49,6 +116,46 @@ export default function Header() {
       connectWallet();
     }
   };
+  
+  // Handle tab navigation click
+  const handleNavClick = (key) => {
+    setSelectedNav(key);
+    
+    // Only scroll if on the home page
+    if (router.pathname !== '/') {
+      // Navigate to home page with hash
+      router.push({
+        pathname: '/',
+        hash: getSectionIdFromKey(key)
+      });
+      return;
+    }
+    
+    // Get the section id based on the tab key
+    const sectionId = getSectionIdFromKey(key);
+    const section = document.getElementById(sectionId);
+    
+    if (section) {
+      // Update URL hash without triggering a new page load
+      history.pushState({}, '', `#${sectionId}`);
+      
+      window.scrollTo({
+        top: section.offsetTop - 80, // Offset to account for the header
+        behavior: 'smooth'
+      });
+    }
+  };
+  
+  // Helper function to get section ID from tab key
+  const getSectionIdFromKey = (key) => {
+    const mapping = {
+      "Home": "home",
+      "How it Works": "how-it-works",
+      "Features": "features",
+      "Pricing": "pricing"
+    };
+    return mapping[key] || "home";
+  };
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
@@ -65,7 +172,7 @@ export default function Header() {
               aria-label="Navigation" 
               radius="full"
               selectedKey={selectedNav}
-              onSelectionChange={setSelectedNav}
+              onSelectionChange={handleNavClick}
               classNames={{
                 base: "bg-transparent mt-2",
                 tabList: "gap-6 bg-transparent",
