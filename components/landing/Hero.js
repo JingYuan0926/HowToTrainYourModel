@@ -2,6 +2,7 @@ import React from 'react';
 import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import { WarpBackground } from "@/components/magicui/warp-background";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -20,7 +21,7 @@ export default function Hero() {
         <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full relative z-10">
           <div className="mx-auto text-center mt-16">
             <h1 className="text-5xl md:text-6xl font-bold mb-8 leading-tight text-black">
-              Collaborative AI Training Platform
+              Collaborative ML Training Platform
             </h1>
             <p className="text-xl md:text-2xl mb-16 mx-auto max-w-3xl text-gray-600">
               We&apos;re building a platform where everyone can collaborate to create and improve AI models collectively. 
@@ -39,6 +40,17 @@ export default function Hero() {
                   Started
                 </span>
               </AnimatedSubscribeButton>
+            </div>
+            
+            {/* Built on NEAR SVG */}
+            <div className="flex justify-center mt-12">
+              <Image 
+                src="/built_on.svg" 
+                alt="Built on NEAR" 
+                width={240} 
+                height={40} 
+                className="opacity-60 hover:opacity-100 transition-opacity"
+              />
             </div>
           </div>
         </div>
