@@ -6,12 +6,17 @@ import TEE from '../components/landing/TEE';
 import Roadmap from '../components/landing/Roadmap';
 import CallToAction from '../components/landing/CallToAction';
 import Footer from '../components/landing/Footer';
+import HowItWorks from '../components/landing/HowItWorks';
+import Features from '../components/landing/Features';
+import Pricing from '../components/landing/Pricing';
 
 export default function Home() {
   return (
     <div className="w-[80%] mx-auto border-l border-r border-gray-300">
       <Hero />
-     
+      <HowItWorks />
+      <Features />
+      <Pricing />
       <Footer />
     </div>
   );
