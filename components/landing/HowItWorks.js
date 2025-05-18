@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function HowItWorks() {
   return (
-    <section className="py-20 bg-gray-50 overflow-hidden">
+    <section className="py-20 overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Introduction Section */}
         <div className="text-center mb-12 max-w-4xl mx-auto">
