@@ -1,7 +1,7 @@
 import { Button, Tabs, Tab, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
@@ -13,6 +13,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const router = useRouter();
+  const isManualScrolling = useRef(false);
   
   // Handle URL hash navigation on initial load
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function Header() {
       setTimeout(() => {
         const section = document.getElementById(hash);
         if (section) {
+          isManualScrolling.current = true;
           window.scrollTo({
             top: section.offsetTop - 80,
             behavior: 'smooth'
@@ -31,6 +33,11 @@ export default function Header() {
           if (navKey) {
             setSelectedNav(navKey);
           }
+          
+          // Reset the flag after animation completes
+          setTimeout(() => {
+            isManualScrolling.current = false;
+          }, 800); // Slightly longer than typical scroll animation
         }
       }, 100); // Small delay to ensure DOM is fully loaded
     }
@@ -50,6 +57,9 @@ export default function Header() {
   // Handle scroll events with smoother transition
   useEffect(() => {
     const handleScroll = () => {
+      // Skip processing if manual scrolling is in progress
+      if (isManualScrolling.current) return;
+      
       // Check if scrolled past a threshold (e.g., 50px)
       const scrolled = window.scrollY > 50;
       setIsScrolled(scrolled);
@@ -85,7 +95,9 @@ export default function Header() {
         const sectionBottom = sectionTop + section.offsetHeight;
         
         if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-          setSelectedNav(key);
+          if (selectedNav !== key) {
+            setSelectedNav(key);
+          }
           break;
         }
       }
@@ -98,7 +110,7 @@ export default function Header() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [router.pathname]);
+  }, [router.pathname, selectedNav]);
   
   // Calculate dynamic width based on scroll progress
   const getNavbarWidth = () => {
@@ -117,8 +129,15 @@ export default function Header() {
     }
   };
   
-  // Handle tab navigation click
+  // Handle tab navigation click - improved to reduce flickering
   const handleNavClick = (key) => {
+    // Prevent acting on the same tab multiple times
+    if (selectedNav === key) return;
+    
+    // Set flag to prevent scroll listener from changing nav during animation
+    isManualScrolling.current = true;
+    
+    // Update state first
     setSelectedNav(key);
     
     // Only scroll if on the home page
@@ -136,13 +155,24 @@ export default function Header() {
     const section = document.getElementById(sectionId);
     
     if (section) {
-      // Update URL hash without triggering a new page load
+      // Update URL hash silently - do this first to avoid flickering
       history.pushState({}, '', `#${sectionId}`);
       
-      window.scrollTo({
-        top: section.offsetTop - 80, // Offset to account for the header
-        behavior: 'smooth'
+      // Use requestAnimationFrame to ensure smooth animation
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: section.offsetTop - 80, // Offset to account for the header
+          behavior: 'smooth'
+        });
+        
+        // Reset manual scrolling flag after animation finishes
+        setTimeout(() => {
+          isManualScrolling.current = false;
+        }, 800); // Duration slightly longer than typical scroll animation
       });
+    } else {
+      // In case section not found, reset the flag
+      isManualScrolling.current = false;
     }
   };
   
@@ -181,6 +211,7 @@ export default function Header() {
                 panel: "bg-transparent"
               }}
               variant="light"
+              disableAnimation={false}
             >
               <Tab key="Home" title="Home" />
               <Tab key="How it Works" title="How it Works" />
