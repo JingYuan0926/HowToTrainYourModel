@@ -49,7 +49,7 @@ export default function Hero() {
                 alt="Built on NEAR" 
                 width={240} 
                 height={40} 
-                className="opacity-80 hover:opacity-100 transition-opacity"
+                className="opacity-60 hover:opacity-100 transition-opacity"
               />
             </div>
           </div>
