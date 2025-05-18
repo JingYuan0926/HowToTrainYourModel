@@ -11,12 +11,7 @@ export default function Home() {
   return (
     <div className="w-[80%] mx-auto border-l border-r border-gray-300">
       <Hero />
-      <Problem />
-      <Solution />
-      <KeyFeatures />
-      <TEE />
-      <Roadmap />
-      <CallToAction />
+     
       <Footer />
     </div>
   );
