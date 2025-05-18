@@ -21,7 +21,7 @@ export default function Hero() {
         <div className="container px-6 py-16 md:py-24 flex flex-col justify-center h-full relative z-10">
           <div className="mx-auto text-center mt-16">
             <h1 className="text-5xl md:text-6xl font-bold mb-8 leading-tight text-black">
-              Collaborative AI Training Platform
+              Collaborative ML Training Platform
             </h1>
             <p className="text-xl md:text-2xl mb-16 mx-auto max-w-3xl text-gray-600">
               We&apos;re building a platform where everyone can collaborate to create and improve AI models collectively. 
