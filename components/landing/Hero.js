@@ -3,8 +3,11 @@ import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import { WarpBackground } from "@/components/magicui/warp-background";
 import Image from "next/image";
+import { useRouter } from 'next/router';
 
 export default function Hero() {
+  const router = useRouter();
+
   return (
     <section className="w-full h-[100vh] flex flex-col justify-center items-center relative text-blue-900 border-b border-blue-300 snap-start overflow-hidden">
       <WarpBackground 
@@ -30,7 +33,10 @@ export default function Hero() {
             
             {/* Animated Subscribe Button */}
             <div className="flex justify-center items-center -mt-8">
-              <AnimatedSubscribeButton className="w-48 px-8 py-3 h-12 bg-blue-600 hover:bg-blue-700 text-white">
+              <AnimatedSubscribeButton 
+                onClick={() => router.push('/documents')}
+                className="w-48 px-8 py-3 h-12 bg-blue-600 hover:bg-blue-700 text-white"
+              >
                 <span className="group inline-flex items-center text-base font-medium">
                   Try Now
                   <ChevronRightIcon className="ml-2 size-4 transition-transform duration-300 group-hover:translate-x-1" />

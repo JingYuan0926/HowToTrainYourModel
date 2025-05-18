@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function HowItWorks() {
   return (
-    <section className="py-20 bg-gray-50 overflow-hidden">
+    <section className="py-20 overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Introduction Section */}
         <div className="text-center mb-12 max-w-4xl mx-auto">
@@ -15,7 +15,7 @@ export default function HowItWorks() {
         {/* Grid section with continuous lines */}
         <div className="relative">
           {/* Grid container with increased height to match width (square) */}
-          <div className="relative h-[1024px] max-w-5xl mx-auto">
+          <div className="relative w-full max-w-5xl aspect-square mx-auto">
             {/* Horizontal lines that extend beyond the container */}
             <div className="absolute top-0 w-[200vw] left-[-50vw] h-px bg-gray-300"></div>
             <div className="absolute top-1/2 w-[200vw] left-[-50vw] h-px bg-gray-300"></div>
