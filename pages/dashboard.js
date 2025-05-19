@@ -1,7 +1,7 @@
 import React from 'react';
 import { WarpBackground } from "@/components/magicui/warp-background";
 
-export default function Documents() {
+export default function Dashboard() {
   return (
     <div className="min-h-screen bg-white">
         <div className="container mx-auto px-6 py-24">
