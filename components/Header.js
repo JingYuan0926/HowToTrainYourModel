@@ -262,7 +262,7 @@ export default function Header() {
         <NavbarContent justify="end" className="transition-all duration-420 w-[130px]">
           <NavbarItem>
             <AnimatedSubscribeButton 
-              onClick={() => router.push('/documents')}
+              onClick={() => router.push('/dashboard')}
               className="w-28 px-4 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white"
               subscribeStatus={!!accountId}
             >
