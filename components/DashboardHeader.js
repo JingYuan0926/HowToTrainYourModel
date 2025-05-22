@@ -2,8 +2,6 @@ import { Button, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/
 import Link from "next/link";
 import { useWallet } from "./ConnectWallet";
 import React, { useState, useEffect, useRef } from "react";
-import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
-import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
@@ -50,13 +48,7 @@ export default function DashboardHeader() {
     return "100%";
   };
   
-  const handleConnectWallet = () => {
-    if (accountId) {
-      disconnectWallet();
-    } else {
-      connectWallet();
-    }
-  };
+  
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
@@ -100,20 +92,12 @@ export default function DashboardHeader() {
         {/* Right side - Connect Wallet button with fixed width to maintain spacing */}
         <NavbarContent justify="end" className="transition-all duration-420 w-[130px]">
           <NavbarItem>
-            <AnimatedSubscribeButton 
-              onClick={handleConnectWallet}
-              className="w-28 px-4 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white"
-              subscribeStatus={!!accountId}
+            <Button 
+              color="primary"
+              className="w-28 px-4 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium"
             >
-              <span className="group inline-flex items-center text-sm font-medium">
-                Connect
-                <ChevronRightIcon className="ml-2 size-3 transition-transform duration-300 group-hover:translate-x-1" />
-              </span>
-              <span className="group inline-flex items-center text-sm font-medium">
-                <CheckIcon className="mr-1 size-3" />
-                Connected
-              </span>
-            </AnimatedSubscribeButton>
+              {accountId ? "Disconnect" : "Connect Wallet"}
+            </Button>
           </NavbarItem>
         </NavbarContent>
       </Navbar>
