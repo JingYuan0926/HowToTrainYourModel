@@ -7,7 +7,9 @@ import Pricing from '../components/landing/Pricing';
 
 export default function Home() {
   return (
-    <div className="w-[80%] mx-auto border-l border-r border-gray-300">
+    <div 
+      className="w-[80%] mx-auto border-l border-r border-gray-300 overflow-y-auto"
+    >
       <Header />
       <section id="home">
         <Hero />
