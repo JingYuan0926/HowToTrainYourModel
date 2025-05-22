@@ -48,7 +48,13 @@ export default function DashboardHeader() {
     return "100%";
   };
   
-  
+  const handleConnectWallet = () => {
+    if (accountId) {
+      disconnectWallet();
+    } else {
+      connectWallet();
+    }
+  };
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
@@ -94,6 +100,7 @@ export default function DashboardHeader() {
           <NavbarItem>
             <Button 
               color="primary"
+              onClick={handleConnectWallet}
               className="w-28 px-4 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium"
             >
               {accountId ? "Disconnect" : "Connect Wallet"}
