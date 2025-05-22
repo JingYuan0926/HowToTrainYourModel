@@ -12,15 +12,7 @@ export default function Home() {
       <section id="home">
         <Hero />
       </section>
-      <section id="how-it-works">
-        <HowItWorks />
-      </section>
-      <section id="features">
-        <Features />
-      </section>
-      <section id="pricing">
-        <Pricing />
-      </section>
+      
       <Footer />
     </div>
   );
