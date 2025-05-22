@@ -9,7 +9,6 @@ export default function Home() {
   return (
     <div 
       className="w-[80%] mx-auto border-l border-r border-gray-300 overflow-y-auto"
-      style={hideScrollbarStyle}
     >
       <Header />
       <section id="home">
