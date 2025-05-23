@@ -142,14 +142,8 @@ export default function DashboardHeader() {
         <NavbarContent justify="end" className="transition-all duration-420 w-[200px] flex items-center gap-4">
           {accountId && balance !== null && (
             <div className="flex items-center gap-2">
-              <Image
-                src="/near-logo.svg"
-                alt="NEAR"
-                width={16}
-                height={16}
-              />
               <span className="text-sm font-medium text-gray-700">
-                {balance} Ⓝ
+                Balance: {balance}Ⓝ
               </span>
             </div>
           )}
