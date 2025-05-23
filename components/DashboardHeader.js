@@ -9,11 +9,54 @@ export default function DashboardHeader() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [balance, setBalance] = useState(null);
   const router = useRouter();
   const isManualScrolling = useRef(false);
   
   // Determine if header should be shrunk (only when scrolled for dashboard)
   const shouldShrink = isScrolled;
+  
+  // Fetch NEAR balance when accountId changes
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!accountId) {
+        setBalance(null);
+        return;
+      }
+      
+      try {
+        // Using NEAR RPC API to fetch balance
+        const response = await fetch('https://rpc.mainnet.near.org', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 'dontcare',
+            method: 'query',
+            params: {
+              request_type: 'view_account',
+              finality: 'final',
+              account_id: accountId
+            }
+          })
+        });
+
+        const data = await response.json();
+        if (data.result && data.result.amount) {
+          // Convert yoctoNEAR to NEAR (1 NEAR = 10^24 yoctoNEAR)
+          const nearBalance = parseFloat(data.result.amount) / Math.pow(10, 24);
+          setBalance(nearBalance.toFixed(2));
+        }
+      } catch (error) {
+        console.error('Error fetching NEAR balance:', error);
+        setBalance(null);
+      }
+    };
+
+    fetchBalance();
+  }, [accountId]);
   
   // Handle scroll events with smoother transition
   useEffect(() => {
@@ -95,8 +138,21 @@ export default function DashboardHeader() {
           <div style={{ width: "470px", height: "40px" }}></div>
         </NavbarContent>
 
-        {/* Right side - Connect Wallet button with fixed width to maintain spacing */}
-        <NavbarContent justify="end" className="transition-all duration-420 w-[130px]">
+        {/* Right side - Balance and Connect Wallet button */}
+        <NavbarContent justify="end" className="transition-all duration-420 w-[200px] flex items-center gap-4">
+          {accountId && balance !== null && (
+            <div className="flex items-center gap-2">
+              <Image
+                src="/near-logo.svg"
+                alt="NEAR"
+                width={16}
+                height={16}
+              />
+              <span className="text-sm font-medium text-gray-700">
+                {balance} Ⓝ
+              </span>
+            </div>
+          )}
           <NavbarItem>
             <Button 
               color="primary"
