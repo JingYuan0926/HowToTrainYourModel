@@ -4,120 +4,22 @@ import { useWallet } from "./ConnectWallet";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-
-const CONTRACT_ID = 'ilovetofu.near';
-
-// Helper function to encode args to base64
-function encodeArgs(args) {
-  return Buffer.from(JSON.stringify(args)).toString('base64');
-}
-
-// Helper function to decode result from base64
-function decodeResult(base64String) {
-  try {
-    const decoded = Buffer.from(base64String, 'base64');
-    return JSON.parse(decoded.toString());
-  } catch (error) {
-    console.error('Error decoding result:', error);
-    return null;
-  }
-}
+import { useCheckBalance } from "../hooks/useCheckBalance";
+import { useCheckSubscription } from "../hooks/useCheckSubscription";
 
 export default function DashboardHeader() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [balance, setBalance] = useState(null);
-  const [isSubscribed, setIsSubscribed] = useState(false);
   const router = useRouter();
   const isManualScrolling = useRef(false);
   
+  // Use custom hooks for balance and subscription
+  const balance = useCheckBalance(accountId);
+  const isSubscribed = useCheckSubscription(accountId);
+  
   // Determine if header should be shrunk (only when scrolled for dashboard)
   const shouldShrink = isScrolled;
-  
-  // Check subscription status
-  useEffect(() => {
-    const checkSubscription = async () => {
-      if (!accountId) {
-        setIsSubscribed(false);
-        return;
-      }
-
-      try {
-        const response = await fetch('https://rpc.mainnet.near.org', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            id: 'subscription-check',
-            method: 'query',
-            params: {
-              request_type: 'call_function',
-              finality: 'final',
-              account_id: CONTRACT_ID,
-              method_name: 'isSubscribed',
-              args_base64: encodeArgs({ accountId })
-            }
-          })
-        });
-
-        const data = await response.json();
-        if (data.result && data.result.result) {
-          const result = decodeResult(data.result.result);
-          setIsSubscribed(result === true);
-        }
-      } catch (error) {
-        console.error('Error checking subscription:', error);
-        setIsSubscribed(false);
-      }
-    };
-
-    checkSubscription();
-  }, [accountId]);
-
-  // Fetch NEAR balance when accountId changes
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (!accountId) {
-        setBalance(null);
-        return;
-      }
-      
-      try {
-        // Using NEAR RPC API to fetch balance
-        const response = await fetch('https://rpc.mainnet.near.org', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            id: 'dontcare',
-            method: 'query',
-            params: {
-              request_type: 'view_account',
-              finality: 'final',
-              account_id: accountId
-            }
-          })
-        });
-
-        const data = await response.json();
-        if (data.result && data.result.amount) {
-          // Convert yoctoNEAR to NEAR (1 NEAR = 10^24 yoctoNEAR)
-          const nearBalance = parseFloat(data.result.amount) / Math.pow(10, 24);
-          setBalance(nearBalance.toFixed(2));
-        }
-      } catch (error) {
-        console.error('Error fetching NEAR balance:', error);
-        setBalance(null);
-      }
-    };
-
-    fetchBalance();
-  }, [accountId]);
   
   // Handle scroll events with smoother transition
   useEffect(() => {
