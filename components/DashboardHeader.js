@@ -5,17 +5,78 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
+const CONTRACT_ID = 'ilovetofu.near';
+
+// Helper function to encode args to base64
+function encodeArgs(args) {
+  return Buffer.from(JSON.stringify(args)).toString('base64');
+}
+
+// Helper function to decode result from base64
+function decodeResult(base64String) {
+  try {
+    const decoded = Buffer.from(base64String, 'base64');
+    return JSON.parse(decoded.toString());
+  } catch (error) {
+    console.error('Error decoding result:', error);
+    return null;
+  }
+}
+
 export default function DashboardHeader() {
   const { accountId, connectWallet, disconnectWallet } = useWallet();
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [balance, setBalance] = useState(null);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const router = useRouter();
   const isManualScrolling = useRef(false);
   
   // Determine if header should be shrunk (only when scrolled for dashboard)
   const shouldShrink = isScrolled;
   
+  // Check subscription status
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!accountId) {
+        setIsSubscribed(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('https://rpc.mainnet.near.org', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 'subscription-check',
+            method: 'query',
+            params: {
+              request_type: 'call_function',
+              finality: 'final',
+              account_id: CONTRACT_ID,
+              method_name: 'isSubscribed',
+              args_base64: encodeArgs({ accountId })
+            }
+          })
+        });
+
+        const data = await response.json();
+        if (data.result && data.result.result) {
+          const result = decodeResult(data.result.result);
+          setIsSubscribed(result === true);
+        }
+      } catch (error) {
+        console.error('Error checking subscription:', error);
+        setIsSubscribed(false);
+      }
+    };
+
+    checkSubscription();
+  }, [accountId]);
+
   // Fetch NEAR balance when accountId changes
   useEffect(() => {
     const fetchBalance = async () => {
@@ -138,12 +199,17 @@ export default function DashboardHeader() {
           <div style={{ width: "470px", height: "40px" }}></div>
         </NavbarContent>
 
-        {/* Right side - Balance and Connect Wallet button */}
-        <NavbarContent justify="end" className="transition-all duration-420 w-[200px] flex items-center gap-4">
-          {accountId && balance !== null && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">
-                Balance: {balance}Ⓝ
+        {/* Right side - Balance, Subscription Status, and Connect Wallet button */}
+        <NavbarContent justify="end" className="transition-all duration-420 w-[300px] flex items-center gap-4">
+          {accountId && (
+            <div className="flex flex-col items-end gap-1">
+              {balance !== null && (
+                <span className="text-sm font-medium text-gray-700">
+                  Balance: {balance}Ⓝ
+                </span>
+              )}
+              <span className={`text-sm font-medium ${isSubscribed ? 'text-green-600' : 'text-red-600'}`}>
+                {isSubscribed ? 'Subscribed' : 'Not Subscribed'}
               </span>
             </div>
           )}
