@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { WarpBackground } from "@/components/magicui/warp-background";
 import DashboardHeader from "@/components/DashboardHeader";
 import { useWallet } from "@/components/ConnectWallet";
@@ -10,13 +10,51 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import SubscriptionModal from "@/components/SubscriptionModal";
+import ModelModal from "@/components/ModelModal";
+
+const models = [
+  {
+    id: 'gpt-4',
+    name: 'GPT-4',
+    description: 'Advanced language model for complex tasks and creative content generation.',
+    icon: '🤖',
+    color: 'blue'
+  },
+  {
+    id: 'stable-diffusion',
+    name: 'Stable Diffusion',
+    description: 'State-of-the-art image generation model for creating stunning visuals.',
+    icon: '🎨',
+    color: 'purple'
+  },
+  {
+    id: 'bert',
+    name: 'BERT',
+    description: 'Powerful NLP model for text analysis and understanding.',
+    icon: '📝',
+    color: 'green'
+  },
+  {
+    id: 'whisper',
+    name: 'Whisper',
+    description: 'Advanced speech recognition model for audio transcription.',
+    icon: '🎤',
+    color: 'pink'
+  }
+];
 
 export default function Dashboard() {
   const { accountId } = useWallet();
   const { isSubscribed, formattedExpiry } = useCheckSubscription(accountId);
   const { subscribe, isSubscribing, subscribeError, subscribeSuccess } = useSubscribe();
-  const { runModel, isProcessing, error, success } = useModel();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen: isSubscriptionOpen, onOpen: onSubscriptionOpen, onOpenChange: onSubscriptionOpenChange } = useDisclosure();
+  const { isOpen: isModelOpen, onOpen: onModelOpen, onOpenChange: onModelOpenChange } = useDisclosure();
+  const [selectedModel, setSelectedModel] = useState(null);
+
+  const handleModelClick = (model) => {
+    setSelectedModel(model);
+    onModelOpen();
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -81,49 +119,53 @@ export default function Dashboard() {
           <div>
             <div className="flex items-center gap-8 mb-6">
               <h1 className="text-3xl font-bold text-gray-900 flex-grow">
-                Welcome to your Dashboard
+                Available Models
               </h1>
               <Button 
                 color="primary"
-                onPress={onOpen}
+                onPress={onSubscriptionOpen}
                 className="flex-shrink-0 px-6 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-full"
               >
                 View Subscription
               </Button>
             </div>
             
-            <div className="mt-8">
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
-                  <p className="text-red-700 text-sm">{error}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+              {models.map((model) => (
+                <div 
+                  key={model.id}
+                  className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-xl"
+                >
+                  <div className="p-6">
+                    <div className="text-4xl mb-4">{model.icon}</div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      {model.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-6">
+                      {model.description}
+                    </p>
+                    <button
+                      onClick={() => handleModelClick(model)}
+                      className={`w-full py-2 px-4 rounded-lg font-medium transition duration-200 bg-${model.color}-100 text-${model.color}-700 hover:bg-${model.color}-200`}
+                    >
+                      Use Model
+                    </button>
+                  </div>
                 </div>
-              )}
-              
-              {success && (
-                <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
-                  <p className="text-green-700 text-sm">Model used successfully!</p>
-                </div>
-              )}
-              
-              <button
-                onClick={runModel}
-                disabled={isProcessing}
-                className={`w-full font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 ${
-                  isProcessing 
-                    ? 'bg-gray-400 cursor-not-allowed' 
-                    : 'bg-purple-600 hover:bg-purple-700 text-white'
-                }`}
-              >
-                {isProcessing ? 'Processing...' : 'Use Model'}
-              </button>
+              ))}
             </div>
           </div>
         )}
       </div>
       <SubscriptionModal 
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        isOpen={isSubscriptionOpen}
+        onOpenChange={onSubscriptionOpenChange}
         formattedExpiry={formattedExpiry}
+      />
+      <ModelModal
+        isOpen={isModelOpen}
+        onOpenChange={onModelOpenChange}
+        model={selectedModel}
       />
     </div>
   );
