@@ -1,43 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { WarpBackground } from "@/components/magicui/warp-background";
 import DashboardHeader from "@/components/DashboardHeader";
 import { useWallet } from "@/components/ConnectWallet";
 import { useCheckSubscription } from "@/hooks/useCheckSubscription";
+import { useSubscribe } from "@/hooks/useSubscribe";
 
 export default function Dashboard() {
-  const { accountId, callContractMethod } = useWallet();
+  const { accountId } = useWallet();
   const isSubscribed = useCheckSubscription(accountId);
-  const [isSubscribing, setIsSubscribing] = useState(false);
-  const [subscribeError, setSubscribeError] = useState(null);
-  const [subscribeSuccess, setSubscribeSuccess] = useState(false);
-
-  const handleSubscribe = async () => {
-    if (!accountId) return;
-    
-    setIsSubscribing(true);
-    setSubscribeError(null);
-    setSubscribeSuccess(false);
-    
-    try {
-      // Call the subscribe method with 1 NEAR deposit
-      const result = await callContractMethod(
-        'subscribe',
-        {},
-        '30000000000000', // 30 TGas
-        '1000000000000000000000000' // 1 NEAR in yoctoNEAR
-      );
-      
-      if (result) {
-        setSubscribeSuccess(true);
-        // The subscription status will be updated automatically by the useCheckSubscription hook
-      }
-    } catch (error) {
-      console.error('Subscription failed:', error);
-      setSubscribeError(error.message || 'Failed to subscribe. Please try again.');
-    } finally {
-      setIsSubscribing(false);
-    }
-  };
+  const { subscribe, isSubscribing, subscribeError, subscribeSuccess } = useSubscribe();
 
   return (
     <div className="min-h-screen bg-white">
@@ -85,7 +56,7 @@ export default function Dashboard() {
                 )}
                 
                 <button
-                  onClick={handleSubscribe}
+                  onClick={subscribe}
                   disabled={isSubscribing}
                   className={`w-full font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 ${
                     isSubscribing 
