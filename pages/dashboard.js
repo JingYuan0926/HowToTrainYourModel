@@ -4,6 +4,7 @@ import DashboardHeader from "@/components/DashboardHeader";
 import { useWallet } from "@/components/ConnectWallet";
 import { useCheckSubscription } from "@/hooks/useCheckSubscription";
 import { useSubscribe } from "@/hooks/useSubscribe";
+import { useModel } from "@/hooks/useModel";
 import {
   Button,
   useDisclosure,
@@ -14,6 +15,7 @@ export default function Dashboard() {
   const { accountId } = useWallet();
   const { isSubscribed, formattedExpiry } = useCheckSubscription(accountId);
   const { subscribe, isSubscribing, subscribeError, subscribeSuccess } = useSubscribe();
+  const { runModel, isProcessing, error, success } = useModel();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
@@ -90,6 +92,31 @@ export default function Dashboard() {
               </Button>
             </div>
             
+            <div className="mt-8">
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+                  <p className="text-red-700 text-sm">{error}</p>
+                </div>
+              )}
+              
+              {success && (
+                <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
+                  <p className="text-green-700 text-sm">Model used successfully!</p>
+                </div>
+              )}
+              
+              <button
+                onClick={runModel}
+                disabled={isProcessing}
+                className={`w-full font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 ${
+                  isProcessing 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+                }`}
+              >
+                {isProcessing ? 'Processing...' : 'Use Model'}
+              </button>
+            </div>
           </div>
         )}
       </div>
