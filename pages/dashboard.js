@@ -1,10 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { WarpBackground } from "@/components/magicui/warp-background";
 import DashboardHeader from "@/components/DashboardHeader";
 import { useWallet } from "@/components/ConnectWallet";
+import { useCheckSubscription } from "@/hooks/useCheckSubscription";
 
 export default function Dashboard() {
-  const { accountId } = useWallet();
+  const { accountId, callContractMethod } = useWallet();
+  const isSubscribed = useCheckSubscription(accountId);
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscribeError, setSubscribeError] = useState(null);
+  const [subscribeSuccess, setSubscribeSuccess] = useState(false);
+
+  const handleSubscribe = async () => {
+    if (!accountId) return;
+    
+    setIsSubscribing(true);
+    setSubscribeError(null);
+    setSubscribeSuccess(false);
+    
+    try {
+      // Call the subscribe method with 1 NEAR deposit
+      const result = await callContractMethod(
+        'subscribe',
+        {},
+        '30000000000000', // 30 TGas
+        '1000000000000000000000000' // 1 NEAR in yoctoNEAR
+      );
+      
+      if (result) {
+        setSubscribeSuccess(true);
+        // The subscription status will be updated automatically by the useCheckSubscription hook
+      }
+    } catch (error) {
+      console.error('Subscription failed:', error);
+      setSubscribeError(error.message || 'Failed to subscribe. Please try again.');
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -25,14 +58,57 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
+          ) : !isSubscribed ? (
+            // Show subscribe prompt when connected but not subscribed
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 max-w-md">
+                <div className="mb-4">
+                  <svg className="mx-auto h-16 w-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">Subscribe to Continue</h2>
+                <p className="text-gray-700 mb-6">
+                  Get access to HTTYM features with a monthly subscription for 1 NEAR token.
+                </p>
+                
+                {subscribeError && (
+                  <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+                    <p className="text-red-700 text-sm">{subscribeError}</p>
+                  </div>
+                )}
+                
+                {subscribeSuccess && (
+                  <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
+                    <p className="text-green-700 text-sm">Subscription successful! Please wait a moment for it to update.</p>
+                  </div>
+                )}
+                
+                <button
+                  onClick={handleSubscribe}
+                  disabled={isSubscribing}
+                  className={`w-full font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 ${
+                    isSubscribing 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {isSubscribing ? 'Subscribing...' : 'Subscribe for 1 NEAR'}
+                </button>
+              </div>
+            </div>
           ) : (
-            // Show main dashboard content when connected
+            // Show main dashboard content when connected and subscribed
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-6">
                 Welcome to your Dashboard
               </h1>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Dashboard content will go here */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-2 text-green-600">✓ Subscribed</h3>
+                  <p className="text-gray-600">You have access to all HTTYM features!</p>
+                </div>
               </div>
             </div>
           )}
