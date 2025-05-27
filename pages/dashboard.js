@@ -7,7 +7,7 @@ import { useSubscribe } from "@/hooks/useSubscribe";
 
 export default function Dashboard() {
   const { accountId } = useWallet();
-  const isSubscribed = useCheckSubscription(accountId);
+  const { isSubscribed, formattedExpiry } = useCheckSubscription(accountId);
   const { subscribe, isSubscribing, subscribeError, subscribeSuccess } = useSubscribe();
 
   return (
@@ -75,10 +75,14 @@ export default function Dashboard() {
                 Welcome to your Dashboard
               </h1>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Dashboard content will go here */}
                 <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                   <h3 className="text-lg font-semibold mb-2 text-green-600">✓ Subscribed</h3>
                   <p className="text-gray-600">You have access to all HTTYM features!</p>
+                  {formattedExpiry && (
+                    <p className="mt-2 text-sm text-gray-500">
+                      Subscription expires: {formattedExpiry}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
