@@ -1,6 +1,5 @@
 import { Button, Tabs, Tab, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import Link from "next/link";
-import { useWallet } from "./ConnectWallet";
 import React, { useState, useEffect, useRef } from "react";
 import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
@@ -8,7 +7,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 
 export default function Header() {
-  const { accountId, connectWallet, disconnectWallet } = useWallet();
   const [selectedNav, setSelectedNav] = useState("Home");
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -122,14 +120,6 @@ export default function Header() {
     
     // Otherwise stay at full width (only at top AND on home section)
     return "100%";
-  };
-  
-  const handleConnectWallet = () => {
-    if (accountId) {
-      disconnectWallet();
-    } else {
-      connectWallet();
-    }
   };
   
   // Handle tab navigation click - improved to reduce flickering
@@ -258,13 +248,13 @@ export default function Header() {
           <div style={{ width: "470px", height: "40px" }}></div>
         </NavbarContent>
 
-        {/* Right side - Connect Wallet button with fixed width to maintain spacing */}
+        {/* Right side - Try Now button with fixed width to maintain spacing */}
         <NavbarContent justify="end" className="transition-all duration-420 w-[130px]">
           <NavbarItem>
             <AnimatedSubscribeButton 
               onClick={() => router.push('/dashboard')}
               className="w-28 px-4 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white"
-              subscribeStatus={!!accountId}
+              subscribeStatus={false}
             >
               <span className="group inline-flex items-center text-sm font-medium">
                 Try Now
