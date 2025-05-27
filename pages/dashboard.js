@@ -83,6 +83,36 @@ export default function Dashboard() {
                       Subscription expires: {formattedExpiry}
                     </p>
                   )}
+                  
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Extend Your Subscription</h4>
+                    {subscribeError && (
+                      <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+                        <p className="text-red-700 text-sm">{subscribeError}</p>
+                      </div>
+                    )}
+                    
+                    {subscribeSuccess && (
+                      <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
+                        <p className="text-green-700 text-sm">Successfully extended! The expiry date will update shortly.</p>
+                      </div>
+                    )}
+                    
+                    <button
+                      onClick={subscribe}
+                      disabled={isSubscribing}
+                      className={`w-full text-sm font-semibold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 ${
+                        isSubscribing 
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                          : 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
+                      }`}
+                    >
+                      {isSubscribing ? 'Processing...' : 'Add Another Month (1 NEAR)'}
+                    </button>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Extending your subscription will add one month from your current expiry date.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
