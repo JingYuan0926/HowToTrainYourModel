@@ -12,7 +12,7 @@ import {
 import { useModel } from "@/hooks/useModel";
 
 export default function ModelModal({ isOpen, onOpenChange, model }) {
-  const { runModel, isProcessing, error, success } = useModel();
+  const { runModel, isProcessing, error, success, result } = useModel();
   const [input, setInput] = useState('');
   const [selectedTab, setSelectedTab] = useState('platform');
 
@@ -44,9 +44,12 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
                   </div>
                 )}
                 
-                {success && (
+                {success && result && (
                   <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                    <p className="text-green-700 text-sm">Model used successfully!</p>
+                    <p className="text-green-700 text-sm font-medium mb-2">Prediction Results:</p>
+                    <pre className="bg-white p-3 rounded border border-green-100 text-sm overflow-x-auto">
+                      {JSON.stringify(result, null, 2)}
+                    </pre>
                   </div>
                 )}
 
@@ -56,7 +59,7 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
                   className="w-full"
                 >
                   <Tab key="platform" title="Use Platform">
-                    <div className="mt-4">
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Input Text
                       </label>
@@ -81,19 +84,31 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
                       </div>
                     </div>
                   </Tab>
-                  <Tab key="code" title="Use Code">
+                  <Tab key="code" title="Code Example">
                     <div className="mt-4">
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="text-sm font-medium text-gray-900 mb-2">Example Code</h3>
                         <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                          <code>{`const result = await contract.useModel({
-  modelId: "${model.id}",
-  input: "Your input here"
-});`}</code>
+                          <code>{`const response = await fetch(
+  'https://e3c329acf714051138becd9199470e6d1ae0cabd-5050.dstack-prod5.phala.network/predict',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      modelId: "${model.id}",
+      input: "Your input here"
+    })
+  }
+);
+
+const result = await response.json();`}</code>
                         </pre>
                       </div>
                       <p className="text-sm text-gray-600 mt-4">
-                        You can integrate this model directly in your code using our SDK. 
+                        You can integrate this model directly in your code using our API. 
                         Check out the <a href="#" className="text-blue-600 hover:underline">documentation</a> for more details.
                       </p>
                     </div>
