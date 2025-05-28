@@ -117,7 +117,7 @@ const result = await response.json();`}</code>
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button color="primary" variant="light" onPress={onClose}>
+              <Button color="danger" onPress={onClose}>
                 Close
               </Button>
             </ModalFooter>
