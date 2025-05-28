@@ -23,8 +23,8 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
-      <ModalContent>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="md">
+      <ModalContent className="max-h-[90vh] overflow-hidden">
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
@@ -36,7 +36,7 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
                 </div>
               </div>
             </ModalHeader>
-            <ModalBody>
+            <ModalBody className="overflow-y-auto">
               <div className="space-y-4">
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-md p-3">
@@ -67,7 +67,7 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Enter your text here..."
-                        className="w-full h-32 px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
+                        className="w-full h-24 px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
                       />
                       <div className="mt-4">
                         <button
@@ -88,7 +88,7 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
                     <div className="mt-4">
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="text-sm font-medium text-gray-900 mb-2">Example Code</h3>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto max-h-[300px]">
                           <code>{`const response = await fetch(
   'https://e3c329acf714051138becd9199470e6d1ae0cabd-5050.dstack-prod5.phala.network/predict',
   {
