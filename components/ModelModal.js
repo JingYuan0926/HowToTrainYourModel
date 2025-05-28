@@ -15,11 +15,39 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
   const { runModel, isProcessing, error, success, result } = useModel();
   const [input, setInput] = useState('');
   const [selectedTab, setSelectedTab] = useState('platform');
+  const [isCopied, setIsCopied] = useState(false);
 
   if (!model) return null;
 
   const handleRunModel = async () => {
     await runModel(model.id, input);
+  };
+
+  const handleCopyCode = async () => {
+    const codeString = `const response = await fetch(
+  'https://e3c329acf714051138becd9199470e6d1ae0cabd-5050.dstack-prod5.phala.network/predict',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      modelId: "${model.id}",
+      input: "Your input here"
+    })
+  }
+);
+
+const result = await response.json();`;
+
+    try {
+      await navigator.clipboard.writeText(codeString);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy code:', err);
+    }
   };
 
   return (
@@ -87,7 +115,29 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
                   <Tab key="code" title="Code Example">
                     <div className="mt-4">
                       <div className="bg-gray-50 p-4 rounded-lg">
-                        <h3 className="text-sm font-medium text-gray-900 mb-2">Example Code</h3>
+                        <div className="flex justify-between items-center mb-2">
+                          <h3 className="text-sm font-medium text-gray-900">Example Code</h3>
+                          <button
+                            onClick={handleCopyCode}
+                            className="flex items-center gap-1 px-2 py-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                          >
+                            {isCopied ? (
+                              <>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                                <span>Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                <span>Copy</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
                         <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto max-h-[300px]">
                           <code>{`const response = await fetch(
   'https://e3c329acf714051138becd9199470e6d1ae0cabd-5050.dstack-prod5.phala.network/predict',
