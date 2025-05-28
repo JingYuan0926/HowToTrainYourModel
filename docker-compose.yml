@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  aimodel:
+    image: derek2403/aimodel:latest
+    build:
+      context: ./aimodel
+      dockerfile: Dockerfile 
+    ports:
+        - "3001:3001"
+    environment:
+        - HF_HOME=/app/models
+        - TRANSFORMERS_OFFLINE=0
+        - TOKENIZERS_PARALLELISM=false
+        - NODE2_URL=https://2ac100b57f58fc36993159c1d069cc33b10e8d3f-5001.dstack-prod5.phala.network
+    restart: on-failure:5
+    volumes:
+        - /var/run/tappd.sock:/var/run/tappd.sock
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 180s
+    dns:
+        - 8.8.8.8
+        - 8.8.4.4 
