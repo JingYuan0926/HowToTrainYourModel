@@ -43,3 +43,4 @@ yarn-error.log*
 next-env.d.ts
 
 smartcontract/node_modules
+/aimodel/models 
