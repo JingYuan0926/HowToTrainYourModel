@@ -10,9 +10,18 @@ import {
   Tab,
 } from "@heroui/react";
 import { useModel } from "@/hooks/useModel";
+import { useTEEML } from "@/hooks/useTEEML";
 
 export default function ModelModal({ isOpen, onOpenChange, model }) {
-  const { runModel, isProcessing, error, success, result } = useModel();
+  const { runModel, isProcessing: walletProcessing, error: walletError } = useModel();
+  const { 
+    runTEEMLModel, 
+    isProcessing: teemlProcessing, 
+    error: teemlError, 
+    success: teemlSuccess, 
+    result: teemlResult 
+  } = useTEEML();
+  
   const [input, setInput] = useState('');
   const [bitcoinData, setBitcoinData] = useState({
     open: '',
@@ -25,6 +34,10 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
   if (!model) return null;
 
   const isBitcoinModel = ['linear-regression', 'decision-tree', 'random-forest'].includes(model.id);
+  const isProcessing = walletProcessing || teemlProcessing;
+  const error = walletError || teemlError;
+  const success = isBitcoinModel ? teemlSuccess : false;
+  const result = isBitcoinModel ? teemlResult : null;
 
   const handleRunModel = async () => {
     if (isBitcoinModel) {
@@ -33,8 +46,15 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
         high: parseFloat(bitcoinData.high),
         low: parseFloat(bitcoinData.low)
       };
-      await runModel(model.id, modelInput);
+      
+      // First run wallet verification
+      const walletSuccess = await runModel(model.id, modelInput);
+      if (walletSuccess) {
+        // Then run the TEEML prediction
+        await runTEEMLModel(model.id, modelInput);
+      }
     } else {
+      // For non-Bitcoin models (like Deepseek LLM), just use the original useModel
       await runModel(model.id, input);
     }
   };
@@ -115,10 +135,26 @@ const result = await response.json();`;
                 
                 {success && result && (
                   <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                    <p className="text-green-700 text-sm font-medium mb-2">Prediction Results:</p>
-                    <pre className="bg-white p-3 rounded border border-green-100 text-sm overflow-x-auto">
-                      {JSON.stringify(result, null, 2)}
-                    </pre>
+                    {isBitcoinModel ? (
+                      <>
+                        <p className="text-green-700 text-sm font-medium mb-2">Prediction Results:</p>
+                        <div className="bg-white p-3 rounded border border-green-100">
+                          <p className="text-lg font-semibold text-gray-800">
+                            Predicted Price: ${result.predicted_close?.toFixed(2) || 'N/A'}
+                          </p>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Model: {result.model}
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-green-700 text-sm font-medium mb-2">Results:</p>
+                        <pre className="bg-white p-3 rounded border border-green-100 text-sm overflow-x-auto">
+                          {JSON.stringify(result, null, 2)}
+                        </pre>
+                      </>
+                    )}
                   </div>
                 )}
 
