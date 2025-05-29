@@ -14,32 +14,32 @@ import ModelModal from "@/components/ModelModal";
 
 const models = [
   {
-    id: 'gpt-4',
-    name: 'GPT-4',
-    description: 'Advanced language model for complex tasks and creative content generation.',
-    icon: '🤖',
+    id: 'linear-regression',
+    name: 'Linear Regression',
+    description: 'Statistical model for predicting Bitcoin price trends using linear relationships between variables.',
+    icon: '📈',
     color: 'blue'
   },
   {
-    id: 'stable-diffusion',
-    name: 'Stable Diffusion',
-    description: 'State-of-the-art image generation model for creating stunning visuals.',
-    icon: '🎨',
-    color: 'purple'
-  },
-  {
-    id: 'bert',
-    name: 'BERT',
-    description: 'Powerful NLP model for text analysis and understanding.',
-    icon: '📝',
+    id: 'decision-tree',
+    name: 'Decision Tree',
+    description: 'Tree-based machine learning model for Bitcoin price prediction with interpretable decision paths.',
+    icon: '🌳',
     color: 'green'
   },
   {
-    id: 'whisper',
-    name: 'Whisper',
-    description: 'Advanced speech recognition model for audio transcription.',
-    icon: '🎤',
-    color: 'pink'
+    id: 'random-forest',
+    name: 'Random Forest',
+    description: 'Ensemble learning method combining multiple decision trees for robust Bitcoin price forecasting.',
+    icon: '🌲',
+    color: 'emerald'
+  },
+  {
+    id: 'deepseek-llm-v2',
+    name: 'Deepseek LLM v2',
+    description: 'Advanced private large language model for complex reasoning, analysis, and natural language tasks.',
+    icon: '🧠',
+    color: 'purple'
   }
 ];
 
