@@ -132,31 +132,6 @@ const result = await response.json();`;
                     <p className="text-red-700 text-sm">{error}</p>
                   </div>
                 )}
-                
-                {success && result && (
-                  <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                    {isBitcoinModel ? (
-                      <>
-                        <p className="text-green-700 text-sm font-medium mb-2">Prediction Results:</p>
-                        <div className="bg-white p-3 rounded border border-green-100">
-                          <p className="text-lg font-semibold text-gray-800">
-                            Predicted Price: ${result.predicted_close?.toFixed(2) || 'N/A'}
-                          </p>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Model: {result.model}
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-green-700 text-sm font-medium mb-2">Results:</p>
-                        <pre className="bg-white p-3 rounded border border-green-100 text-sm overflow-x-auto">
-                          {JSON.stringify(result, null, 2)}
-                        </pre>
-                      </>
-                    )}
-                  </div>
-                )}
 
                 <Tabs 
                   selectedKey={selectedTab} 
@@ -211,6 +186,32 @@ const result = await response.json();`;
                           />
                         </>
                       )}
+                      
+                      {success && result && (
+                        <div className="bg-green-50 border border-green-200 rounded-md p-3 mt-4">
+                          {isBitcoinModel ? (
+                            <>
+                              <p className="text-green-700 text-sm font-medium mb-2">Prediction Results:</p>
+                              <div className="bg-white p-3 rounded border border-green-100">
+                                <p className="text-lg font-semibold text-gray-800">
+                                  Predicted Price: ${result.predicted_close?.toFixed(2) || 'N/A'}
+                                </p>
+                                <p className="text-sm text-gray-600 mt-1">
+                                  Model: {result.model}
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-green-700 text-sm font-medium mb-2">Results:</p>
+                              <pre className="bg-white p-3 rounded border border-green-100 text-sm overflow-x-auto">
+                                {JSON.stringify(result, null, 2)}
+                              </pre>
+                            </>
+                          )}
+                        </div>
+                      )}
+
                       <div className="mt-4">
                         <button
                           onClick={handleRunModel}
