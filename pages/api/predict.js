@@ -1,37 +1,50 @@
 export default async function handler(req, res) {
-    // Only accept POST requests
-    if (req.method !== 'POST') {
-      return res.status(405).json({ message: 'Method not allowed' });
-    }
-  
-    try {
-      // Forward the request to the external server
-      const response = await fetch(
-        'https://e3c329acf714051138becd9199470e6d1ae0cabd-5050.dstack-prod5.phala.network/predict',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(req.body),
-        }
-      );
-  
-      // Handle non-successful responses
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        return res.status(response.status).json(
-          errorData.message ? { message: errorData.message } : { message: 'API request failed' }
-        );
-      }
-  
-      // Return the successful response data
-      const data = await response.json();
-      return res.status(200).json(data);
-    } catch (error) {
-      console.error('Error proxying request to prediction server:', error);
-      return res.status(500).json({ message: 'Failed to connect to prediction server' });
-    }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const { modelId, inputData } = req.body;
+
+  const modelEndpoints = {
+    'linear-regression': 'https://d1abd08c11797e048b6b6db79b0cf9cc62c068bc-5003.dstack-prod7.phala.network/predict/linear_regression',
+    'decision-tree': 'https://d1abd08c11797e048b6b6db79b0cf9cc62c068bc-5003.dstack-prod7.phala.network/predict/decision_tree',
+    'random-forest': 'https://d1abd08c11797e048b6b6db79b0cf9cc62c068bc-5003.dstack-prod7.phala.network/predict/random_forest'
+  };
+
+  const endpoint = modelEndpoints[modelId];
+  if (!endpoint) {
+    return res.status(400).json({ error: `No endpoint found for model: ${modelId}` });
+  }
+
+  try {
+    // Format input data for the external API
+    const requestData = {
+      Open: inputData.open,
+      High: inputData.high,
+      Low: inputData.low
+    };
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return res.status(200).json(data);
+
+  } catch (error) {
+    console.error('External API request failed:', error);
+    return res.status(500).json({ 
+      error: 'Failed to get prediction from external API',
+      details: error.message 
+    });
+  }
+}
   
