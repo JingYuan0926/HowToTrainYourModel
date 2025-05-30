@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   ModalContent,
@@ -19,7 +19,8 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
     isProcessing: teemlProcessing, 
     error: teemlError, 
     success: teemlSuccess, 
-    result: teemlResult 
+    result: teemlResult,
+    resetStates: resetTeemlStates
   } = useTEEML();
   
   const [input, setInput] = useState('');
@@ -31,13 +32,23 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
   const [selectedTab, setSelectedTab] = useState('platform');
   const [isCopied, setIsCopied] = useState(false);
 
+  // Reset states when modal opens or model changes
+  useEffect(() => {
+    if (isOpen && model) {
+      resetTeemlStates();
+      setInput('');
+      setBitcoinData({ open: '', high: '', low: '' });
+    }
+  }, [isOpen, model?.id, resetTeemlStates]);
+
   if (!model) return null;
 
   const isBitcoinModel = ['linear-regression', 'decision-tree', 'random-forest'].includes(model.id);
+  const isDeepseekModel = model.id === 'deepseek-llm-v2';
   const isProcessing = walletProcessing || teemlProcessing;
   const error = walletError || teemlError;
-  const success = isBitcoinModel ? teemlSuccess : false;
-  const result = isBitcoinModel ? teemlResult : null;
+  const success = teemlSuccess;
+  const result = teemlResult;
 
   const handleRunModel = async () => {
     if (isBitcoinModel) {
@@ -53,8 +64,14 @@ export default function ModelModal({ isOpen, onOpenChange, model }) {
         // Then run the TEEML prediction
         await runTEEMLModel(model.id, modelInput);
       }
+    } else if (isDeepseekModel) {
+      // For Deepseek LLM, use TEEML directly with prompt
+      const modelInput = {
+        prompt: input
+      };
+      await runTEEMLModel(model.id, modelInput);
     } else {
-      // For non-Bitcoin models (like Deepseek LLM), just use the original useModel
+      // For other non-Bitcoin models, use the original useModel
       await runModel(model.id, input);
     }
   };
@@ -198,6 +215,15 @@ const result = await response.json();`;
                                 </p>
                                 <p className="text-sm text-gray-600 mt-1">
                                   Model: {result.model}
+                                </p>
+                              </div>
+                            </>
+                          ) : isDeepseekModel ? (
+                            <>
+                              <p className="text-green-700 text-sm font-medium mb-2">AI Response:</p>
+                              <div className="bg-white p-3 rounded border border-green-100">
+                                <p className="text-gray-800 whitespace-pre-wrap">
+                                  {result.output || 'No response received'}
                                 </p>
                               </div>
                             </>
