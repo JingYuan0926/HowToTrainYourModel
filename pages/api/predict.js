@@ -8,7 +8,8 @@ export default async function handler(req, res) {
   const modelEndpoints = {
     'linear-regression': 'https://d1abd08c11797e048b6b6db79b0cf9cc62c068bc-5003.dstack-prod7.phala.network/predict/linear_regression',
     'decision-tree': 'https://d1abd08c11797e048b6b6db79b0cf9cc62c068bc-5003.dstack-prod7.phala.network/predict/decision_tree',
-    'random-forest': 'https://d1abd08c11797e048b6b6db79b0cf9cc62c068bc-5003.dstack-prod7.phala.network/predict/random_forest'
+    'random-forest': 'https://d1abd08c11797e048b6b6db79b0cf9cc62c068bc-5003.dstack-prod7.phala.network/predict/random_forest',
+    'deepseek-llm-v2': 'https://265e7bce2b07a1a9a541e6e29b5c41ac4d5f2f23-3001.dstack-prod6.phala.network/generate'
   };
 
   const endpoint = modelEndpoints[modelId];
@@ -17,12 +18,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Format input data for the external API
-    const requestData = {
-      Open: inputData.open,
-      High: inputData.high,
-      Low: inputData.low
-    };
+    let requestData;
+    
+    // Handle different request formats based on model type
+    if (modelId === 'deepseek-llm-v2') {
+      // Deepseek LLM expects a prompt field
+      requestData = {
+        prompt: inputData.prompt
+      };
+    } else {
+      // Other models expect open, high, low fields
+      requestData = {
+        Open: inputData.open,
+        High: inputData.high,
+        Low: inputData.low
+      };
+    }
 
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -37,7 +48,23 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json();
-    return res.status(200).json(data);
+    
+    // Handle different response formats based on model type
+    if (modelId === 'deepseek-llm-v2') {
+      // Return consistent format for Deepseek response
+      return res.status(200).json({ 
+        status: 'success',
+        output: data.output,
+        model: modelId
+      });
+    } else {
+      // Return consistent format for other models
+      return res.status(200).json({
+        status: 'success',
+        predicted_close: data.predicted_close,
+        model: modelId
+      });
+    }
 
   } catch (error) {
     console.error('External API request failed:', error);
