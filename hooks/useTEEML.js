@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 export function useTEEML() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -49,11 +49,11 @@ export function useTEEML() {
     }
   };
 
-  const resetStates = () => {
+  const resetStates = useCallback(() => {
     setError(null);
     setSuccess(false);
     setResult(null);
-  };
+  }, []);
 
   return {
     runTEEMLModel,
